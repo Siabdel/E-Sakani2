@@ -1,7 +1,11 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-
+from django.utils.translation import gettext as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.auth.models import User
+# from ofschedule.models import DjangoMachine
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=150, db_index=True)
@@ -59,36 +63,18 @@ class BaseProductImage(models.Model):
 #----------------------
 #- Product Attribus 
 
-class BaseProductItem(models.Model):
-    """
-    Déclinaison de produit déterminée par des attributs comme la couleur, etc.
-    """
-
-    class Meta:
-        verbose_name = "Déclinaison Produit"
-
-    product     = models.ForeignKey('BaseProduct', on_delete=models.CASCADE)
-    code        = models.CharField(max_length=10, null=True, blank=True, unique=True)
-    code_ean13  = models.CharField(max_length=13)
-    attributes  = models.ManyToManyField("ProductAttributeValue", related_name="product_item", null=True, blank=True)
-
-    def __str__(self):
-        return u"{0} [{1}]".format(self.product.name, self.code)
-
-    class Meta:
-        abstract = True
 
 class ProductAttribute(models.Model):
     """
     Attributs produit
     """
-    class Meta:
-        verbose_name = "Attribut"
-
     name =  models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = "Attribut"
 
 class ProductAttributeValue(models.Model):
     """
@@ -104,3 +90,27 @@ class ProductAttributeValue(models.Model):
 
     def __str__(self):
         return u"{0} [{1}]".format(self.value, self.product_attribute)
+
+class Product(BaseProduct):
+    pass
+
+class ProductImage(BaseProductImage):
+    product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
+    
+#----------------------
+#- Product Attribus 
+#----------------------
+class ProductItem(models.Model):
+    """
+    Déclinaison de produit déterminée par des attributs comme la couleur, etc.
+    """
+    product     = models.ForeignKey(Product, on_delete=models.CASCADE)
+    code        = models.CharField(max_length=10, null=True, blank=True, unique=True)
+    code_ean13  = models.CharField(max_length=13)
+    attributes  = models.ManyToManyField(ProductAttributeValue, related_name="product_item", null=True, blank=True)
+
+    def __str__(self):
+        return u"{0} [{1}]".format(self.product.name, self.code)
+    class Meta:
+        verbose_name = "Déclinaison Produit"
+

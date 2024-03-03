@@ -32,6 +32,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
+    'product.apps.ProductConfig', # Shop
     'shop.apps.ShopConfig', # Shop
     'cart.apps.CartConfig', # Cart
     'orders.apps.OrdersConfig', # Orders
@@ -67,7 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart',
+                'cart.context_processors.cart', ## new
             ],
         },
     },

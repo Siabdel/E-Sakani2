@@ -1,5 +1,7 @@
 import os
+import tempfile
 from django.contrib import admin
+from product import models as pro_models
 from shop import models as sh_models
 from shop import utils as sh_utils
 from django.conf import settings
@@ -9,11 +11,10 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 class ProductImageInline(admin.TabularInline):
-    model = sh_models.ProductImage
+    model = pro_models.ProductImage
     exlude = ('thumbnail_path', 'large_path',  )
     readonly_fields = ('thumbnail_path', 'large_path',  )
 
-import tempfile
 
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
@@ -45,7 +46,7 @@ class ProductAdmin(admin.ModelAdmin):
                 temp_file.flush()
             
             # Créer une nouvelle instance de ProductImage pour chaque fichier téléchargé
-            new_image = sh_models.ProductImage(product=obj, image=uploaded_image)
+            new_image = pro_models.ProductImage(product=obj, image=uploaded_image)
         
             thumbnail_path, large_path = sh_utils.process_resize_image(new_image, output_dir)
             uploaded_image.large_path = os.path.join("/media/images/", os.path.basename(large_path))
@@ -90,12 +91,12 @@ class ProductAdmin(admin.ModelAdmin):
             product_image.save()
 
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ['product', 'image', 'thumbnail_path', 'large_path' ]
+    list_display = ['image', 'thumbnail_path', 'large_path' ]
 
-admin.site.register(sh_models.Product, ProductAdmin)
-admin.site.register(sh_models.ProductImage, ProductImageAdmin)
+admin.site.register(pro_models.Product, ProductAdmin)
+admin.site.register(pro_models.ProductImage, ProductImageAdmin)
 #-- Attributs
-admin.site.register(sh_models.ProductAttribute)
-admin.site.register(sh_models.ProductAttributeValue)
+admin.site.register(pro_models.ProductAttribute)
+admin.site.register(pro_models.ProductAttributeValue)
 
-admin.site.register(sh_models.Category, CategoryAdmin)
+admin.site.register(pro_models.Category, CategoryAdmin)
