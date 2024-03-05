@@ -10,6 +10,15 @@ from django.conf import settings
 # -----------------------------------------
 # -- Item CART (Panier d'articles en base) 
 # -----------------------------------------
+class ShopCartManager(models.Manager):
+    def get_or_create_cart(self, user):
+        try:
+            # Récupérer le panier existant de l'utilisateur s'il en a un
+            cart = self.get(created_by=user, statut='ACT')
+        except ShopCart.DoesNotExist:
+            # Créer un nouveau panier pour l'utilisateur s'il n'en a pas
+            cart = self.create(created_by=user, statut='ACT')
+        return cart
 class ShopCart(models.Model):
     class StatusChoice(models.TextChoices):
         ACTIVE = 'ACT', _('Encours')
@@ -20,6 +29,7 @@ class ShopCart(models.Model):
     created_by  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     checked_out = models.BooleanField(default=False, verbose_name=_('checked out'))
     comment     = models.TextField(null=True, blank=True, )
+    objects = ShopCartManager()
 
     class Meta:
         verbose_name = _('cart')
@@ -39,20 +49,18 @@ class ItemManager(models.Manager):
 class ItemRaw(models.Model):
     raw_message = models.JSONField()
 
-class ItemArticle(models.Model):    
-    cart = models.ForeignKey(ShopCart, on_delete=models.CASCADE)
+class BaseItemArticle(models.Model):    
     quantity = models.IntegerField(verbose_name=_('quantity'))
     unit_price = models.DecimalField(max_digits=18, decimal_places=2, 
                                      verbose_name=_('unit price'))
      # product as generic relation
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField() 
-    content_object = GenericForeignKey('content_type', 'object_id')
     # quand
     created_at  = models.DateTimeField(auto_now_add=True)
-    # My Manager 
-    objects = ItemManager()
+    
     class Meta:
+        abstract = True
         verbose_name = _('ItemArticle')
         verbose_name_plural = _('ItemArticles')
         ordering = ('-created_at',)
@@ -73,3 +81,11 @@ class ItemArticle(models.Model):
 
     def __str__(self):
         return "product : {}".format(self.product.titre)
+    
+class ItemArticle(BaseItemArticle):    
+    cart = models.ForeignKey(ShopCart, on_delete=models.CASCADE )
+    # product as generic relation
+    content_object = GenericForeignKey('content_type', 'object_id')
+    # My Manager 
+    objects = ItemManager()
+        

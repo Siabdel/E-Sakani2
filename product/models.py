@@ -4,7 +4,6 @@ from django.utils.translation import gettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.auth.models import User
-# from ofschedule.models import DjangoMachine
 from django.conf import settings
 
 class Category(models.Model):
@@ -43,11 +42,6 @@ class BaseProduct(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse('shop:product_detail', args=[self.id, self.slug])
-    
-    def get_images(self):
-        return self.images.all()
 
 
 class BaseProductImage(models.Model):
@@ -92,7 +86,9 @@ class ProductAttributeValue(models.Model):
         return u"{0} [{1}]".format(self.value, self.product_attribute)
 
 class Product(BaseProduct):
-    pass
+    category = models.ForeignKey(Category, related_name='products', 
+                                 null=True, blank=True,
+                                 on_delete=models.CASCADE)
 
 class ProductImage(BaseProductImage):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)

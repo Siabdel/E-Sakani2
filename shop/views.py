@@ -11,7 +11,7 @@ def product_list(request, category_slug=None):
     categories = pro_models.Category.objects.all()
     products = pro_models.Product.objects.filter(available=True)
     if category_slug:
-        category = get_object_or_404(sh_models.Category, slug=category_slug)
+        category = get_object_or_404(pro_models.Category, slug=category_slug)
         products = pro_models.Product.objects.filter(category=category)
 
     context = {

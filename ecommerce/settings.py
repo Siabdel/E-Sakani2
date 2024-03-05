@@ -34,6 +34,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INSTALLED_APPS = [
     'product.apps.ProductConfig', # Shop
     'shop.apps.ShopConfig', # Shop
+    'immoshop.apps.ImmoShopConfig', # Shop
     'cart.apps.CartConfig', # Cart
     'orders.apps.OrdersConfig', # Orders
     'mfilesupload.apps.MfilesuploadConfig', # Multi files upload
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'ecommerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,6 +88,7 @@ DATABASES = {
     }
 }
 
+CART_PRODUCT_MODEL = 'product.Product'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -142,4 +144,4 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CART_SESSION_ID = 'cart'
+CART_SESSION_ID = ''

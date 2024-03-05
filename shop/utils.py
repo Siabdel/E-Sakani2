@@ -1,7 +1,16 @@
 import os
 from PIL import Image
 from shop import models as sh_models
+from product import models as pro_models
 from shop.forms import CartAddProductForm
+
+from django.conf import settings
+from django.apps import apps
+
+def get_product_model():
+    product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', pro_models.Product)
+    app_label, model_name = product_model_string.split('.')
+    return apps.get_model(app_label, model_name)
 
 def process_resize_image(image, output_dir, thumbnail_size=(100, 100), large_size=(800, 600)):
     """
