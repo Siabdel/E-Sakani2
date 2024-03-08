@@ -25,15 +25,11 @@
                   </h5>
                   <div class="card-text">
                       <p class="lead">
-                          <p class="text-center">Kshs. {{ product.price }}</p>
+                          <p class="text-center">{{ product.price }} Euro</p>
                         </p>
                   </div>
                   <div class="col-xs-12 col-md-6">
-                      <form action="" method="post">
-                        {% csrf_token %}
-                        {{ cart_product_form }}
-                        <input type="submit" value="Ajouter au panier" class="btn btn-warning">
-                      </form>
+                    <a href="{% url 'cart:cart_add_item' product.id %}" class="btn btn-warning btn-lg"> Ajouter au panier </a> 
                   </div>
               </div>
           </div>

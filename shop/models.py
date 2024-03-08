@@ -1,3 +1,4 @@
+from typing import Any, MutableMapping
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -11,13 +12,15 @@ from django.conf import settings
 # -- Item CART (Panier d'articles en base) 
 # -----------------------------------------
 class ShopCartManager(models.Manager):
-    def get_or_create_cart(self, user):
+    def get_or_create_cart(self, user, titre="Cart1 test"):
         try:
             # Récupérer le panier existant de l'utilisateur s'il en a un
             cart = self.get(created_by=user, statut='ACT')
-        except ShopCart.DoesNotExist:
+        except Exception as err :
             # Créer un nouveau panier pour l'utilisateur s'il n'en a pas
             cart = self.create(created_by=user, statut='ACT')
+        # save
+        cart.save()
         return cart
 class ShopCart(models.Model):
     class StatusChoice(models.TextChoices):
@@ -32,12 +35,21 @@ class ShopCart(models.Model):
     objects = ShopCartManager()
 
     class Meta:
-        verbose_name = _('cart')
-        verbose_name_plural = _('cartsOf')
+        verbose_name = _('ShopCart')
+        verbose_name_plural = _('ShopCart')
         ordering = ('-created_at',)
 
+    def save(self, *args, **kwargs):
+        self.titre  = self.titre if self.titre  else f"Panier : {self.pk}" 
+        super(ShopCart, self).save(*args, **kwargs) 
+    
+    def sum_items(self):
+        total_quantity = sum(item.quantity for item in self.items.all())
+        return total_quantity
+ 
     def __str__(self):
-        return "{}".format(self.titre)
+        self.titre  = self.titre if self.titre  else f"Panier : {self.id}" 
+        return f"{self.titre} - {self.statut} - {self.created_at}"
 class ItemManager(models.Manager):
     def get(self, *args, **kwargs):
         if 'post' in kwargs:
@@ -45,6 +57,14 @@ class ItemManager(models.Manager):
             kwargs['object_id'] = kwargs['product'].pk
             del(kwargs['product'])
         return super(ItemManager, self).get(*args, **kwargs)
+    
+    def get_or_create_item(self, *args, **kwargs): 
+        created = False
+        try :
+            #return super(ItemManager, self).get(*args, **kwargs)
+            return ItemArticle.get_product() , created
+        except Exception as err :
+            return ItemArticle.objects.get_or_create(*args, **kwargs) 
 
 class ItemRaw(models.Model):
     raw_message = models.JSONField()
@@ -76,16 +96,16 @@ class BaseItemArticle(models.Model):
     def set_product(self, product):
         self.content_type = ContentType.objects.get_for_model(type(product))
         self.object_id = product.pk
-
+    
     product = property(get_product, set_product) 
 
+   
     def __str__(self):
-        return "product : {}".format(self.product.titre)
+        return "product : {}".format(self.product)
     
 class ItemArticle(BaseItemArticle):    
-    cart = models.ForeignKey(ShopCart, on_delete=models.CASCADE )
+    cart = models.ForeignKey(ShopCart, related_name='items', on_delete=models.CASCADE )
     # product as generic relation
     content_object = GenericForeignKey('content_type', 'object_id')
     # My Manager 
     objects = ItemManager()
-        

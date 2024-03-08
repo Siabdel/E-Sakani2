@@ -3,20 +3,19 @@ import tempfile
 from django.contrib import admin
 from product import models as pro_models
 from shop import models as sh_models
-from shop import utils as sh_utils
+from core import utils as sh_utils
 from immoshop import models as msh_models
 from django.conf import settings
 
 
 # Register your models here.
-# 
 class ImmoProductImageInline(admin.TabularInline):
     model = msh_models.ImmoProductImage
     exlude = ('thumbnail_path', 'large_path',  )
     readonly_fields = ('thumbnail_path', 'large_path',)
 
 
-## @admin.register(msh_models.ImmoProduct)
+@admin.register(msh_models.ImmoProduct)
 class ImmoProductAdmin(admin.ModelAdmin):
     inlines = [ImmoProductImageInline]
 
@@ -62,5 +61,6 @@ class ImmoProductAdmin(admin.ModelAdmin):
             product_image.save()
 
 
-
-admin.site.register(msh_models.ImmoProduct, ImmoProductAdmin)
+@admin.register(sh_models.ItemArticle)
+class ItemArticleAdmin(admin.ModelAdmin):
+    list_display =  [field.name for field in sh_models.ItemArticle._meta.get_fields()]

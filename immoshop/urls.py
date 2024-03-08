@@ -6,5 +6,7 @@ app_name="immoshop"
 urlpatterns = [
     path('home/', views.product_immo_list, name='home_immo_list'),
     path('list/', views.product_immo_list, name='product_immo_list'),
-    path('<int:pk>/', views.ProductDetailView.as_view(), name='product_immo_detail'),
+    
+    path('cat/<slug:category_slug>/', views.product_immo_list, name='product_list_by_category'),
+    path('show/<int:pk>/', views.ProductDetailView.as_view(), name='product_immo_detail'),
 ]

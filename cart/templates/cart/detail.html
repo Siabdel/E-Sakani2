@@ -1,4 +1,4 @@
-{% extends 'shop/base.html' %}
+{% extends 'immoshop/base.html' %}
 {% load static %}
 {% block title %}
     Your Shopping Cart
@@ -67,7 +67,7 @@
                 </tbody>
             </table>
         <p class="text-right">
-            <a href="{% url "shop:product_list" %}" class="btn btn-default">Continue Shopping</a>
+            <a href="{% url "immoshop:product_immo_list" %}" class="btn btn-default">Continue Shopping</a>
             <a href="{% url "orders:order_create" %}" class="btn btn-primary">Checkout</a>
         </p>
         </div>

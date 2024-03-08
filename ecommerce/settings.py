@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'immoshop.apps.ImmoShopConfig', # Shop
     'cart.apps.CartConfig', # Cart
     'orders.apps.OrdersConfig', # Orders
+    'core.taxonomy', # new
     'mfilesupload.apps.MfilesuploadConfig', # Multi files upload
     'django.contrib.admin',
     'django.contrib.auth',
@@ -88,7 +89,7 @@ DATABASES = {
     }
 }
 
-CART_PRODUCT_MODEL = 'product.Product'
+CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -144,4 +145,4 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CART_SESSION_ID = ''
+CART_SESSION_ID = 'CARD_ID'

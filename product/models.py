@@ -103,7 +103,7 @@ class ProductItem(models.Model):
     product     = models.ForeignKey(Product, on_delete=models.CASCADE)
     code        = models.CharField(max_length=10, null=True, blank=True, unique=True)
     code_ean13  = models.CharField(max_length=13)
-    attributes  = models.ManyToManyField(ProductAttributeValue, related_name="product_item", null=True, blank=True)
+    attributes  = models.ManyToManyField(ProductAttributeValue, related_name="product_item" )
 
     def __str__(self):
         return u"{0} [{1}]".format(self.product.name, self.code)

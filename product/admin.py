@@ -3,9 +3,10 @@ import tempfile
 from django.contrib import admin
 from product import models as pro_models
 from shop import models as sh_models
-from shop import utils as sh_utils
+from core import utils as sh_utils
 from django.conf import settings
 
+@admin.register(pro_models.Category )
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug']
     prepopulated_fields = {'slug': ('name',)}
@@ -16,6 +17,7 @@ class ProductImageInline(admin.TabularInline):
     readonly_fields = ('thumbnail_path', 'large_path',  )
 
 
+@admin.register(pro_models.Product )
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
 
@@ -90,13 +92,6 @@ class ProductAdmin(admin.ModelAdmin):
             product_image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
             product_image.save()
 
+@admin.register(pro_models.ProductImage )
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ['image', 'thumbnail_path', 'large_path' ]
-
-admin.site.register(pro_models.Product, ProductAdmin)
-admin.site.register(pro_models.ProductImage, ProductImageAdmin)
-#-- Attributs
-admin.site.register(pro_models.ProductAttribute)
-admin.site.register(pro_models.ProductAttributeValue)
-
-admin.site.register(pro_models.Category, CategoryAdmin)
