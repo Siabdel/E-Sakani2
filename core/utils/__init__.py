@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import os
 from PIL import Image
-from shop import models as sh_models
 from product import models as pro_models
 from django.conf import settings
 from django.apps import apps

@@ -7,7 +7,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User, AnonymousUser
 import math
 from product import models as pro_models
-from shop import models as sh_models
+from immoshop import models as sh_models
 from core.utils import get_product_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
@@ -49,11 +49,10 @@ class Cart(object):
         return self.cart
 
     def add(self, product, quantity=1, update_quantity=False):
-        product_id = str(product.id)
-        #product = self.product_model.objects.get(pk=product_id)  # Remplacez YourProductModel par le modèle de produit approprié
-        
+        #
+        # Vérifiez si un article pour ce produit existe déjà dans le panier
+        #messages.add_message(self.request, messages.INFO, f"item quantite={quantity} updatea= {update_quantity}"  )
         try :
-            # Vérifiez si un article pour ce produit existe déjà dans le panier
             item, created = sh_models.ItemArticle.objects.get_or_create(
                                             cart=self.cart, 
                                             object_id=product.id,
@@ -65,7 +64,6 @@ class Cart(object):
                 item.quantity += quantity             
             
             item.save()
-            messages.add_message(self.request, messages.INFO, f"item existe deja dans panier {update_quantity}"  )
         
         except Exception as err:
             item, created = sh_models.ItemArticle.objects.get_or_create(

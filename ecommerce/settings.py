@@ -33,7 +33,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 INSTALLED_APPS = [
     'product.apps.ProductConfig', # Shop
-    'shop.apps.ShopConfig', # Shop
     'immoshop.apps.ImmoShopConfig', # Shop
     'cart.apps.CartConfig', # Cart
     'orders.apps.OrdersConfig', # Orders
@@ -89,7 +88,7 @@ DATABASES = {
     }
 }
 
-CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
+CART_PRODUCT_MODEL = 'product.ImmoProduct'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

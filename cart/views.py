@@ -13,7 +13,8 @@ from django.contrib import messages
 from .cart import Cart
 from .forms import CartAddProductForm
 from core.utils import get_product_model
-from shop import models as sh_models
+from immoshop import models as sh_models
+from product import models as pro_models
 
 
 Product_model = get_product_model()
@@ -30,11 +31,11 @@ def cart_add(request, product_id):
     cart = Cart(request)  # create a new cart object passing it the request object 
     product = get_object_or_404(Product_model, id=product_id) 
     form = CartAddProductForm(request.POST)
+
     
     if form.is_valid():
-        cd = form.cleaned_data
-        # messages.add_message(request, messages.INFO, f"add panier {product}"  )
-        cart.add(product=product, quantity=cd['quantity'], update_quantity=cd['update'])
+        cdata = form.cleaned_data
+        cart.add(product=product, quantity=cdata['quantity'], update_quantity=True)
     return redirect('cart:cart_detail')
 
 
@@ -52,7 +53,7 @@ def cart_detail(request):
     return render(request, 'cart/detail.html', {'cart': cart})
 
 class CartItemArticle(ListView): # new
-    model = sh_models.ItemArticle
+    model = pro_models.ImmoProduct
     template_name = "cart/detail.html"
     #context_object_name = "cart"
     

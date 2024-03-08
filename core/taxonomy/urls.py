@@ -11,6 +11,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from  core.taxonomy import views
 
+app_name="taxonomy"
+
 urlpatterns = [
     # Search.
     url(r'^search/$', views.search, name='search'),

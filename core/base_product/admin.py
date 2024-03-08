@@ -1,22 +1,25 @@
 import os
 import tempfile
 from django.contrib import admin
-from core import utils as sh_utils
 from product import models as pro_models
-from immoshop import models as sh_models
+from shop import models as sh_models
+from core import utils as sh_utils
 from django.conf import settings
 
+@admin.register(pro_models.Category )
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
 
-# Register your models here.
-class ImmoProductImageInline(admin.TabularInline):
-    model = pro_models.ImmoProductImage
+class ProductImageInline(admin.TabularInline):
+    model = pro_models.ProductImage
     exlude = ('thumbnail_path', 'large_path',  )
-    readonly_fields = ('thumbnail_path', 'large_path',)
+    readonly_fields = ('thumbnail_path', 'large_path',  )
 
 
-@admin.register(pro_models.ImmoProduct)
-class ImmoProductAdmin(admin.ModelAdmin):
-    inlines = [ImmoProductImageInline]
+@admin.register(pro_models.Product )
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [ProductImageInline]
 
     list_display = ['name', 'slug', 'price', 'stock', 'available', 'created_at', 'updated_at']
     list_filter = ['available', 'created_at', 'updated_at']
@@ -25,6 +28,36 @@ class ImmoProductAdmin(admin.ModelAdmin):
     # readonly_fields = ('thumbnail_path', 'large_path',  )
     exlude = ('thumbnail_path', 'large_path',  )
     
+    def save_formset__(self, request, form, formset, change):
+        """ Cette méthode est appelée lors de l'enregistrement des 
+        objets dans les formsets associés à votre modèle. 
+        Elle vous permet de contrôler le comportement lors de l'enregistrement 
+        de ces objets.
+        """
+        super().save_formset(request, form, formset, change)
+        output_dir = os.path.join(settings.MEDIA_ROOT, "images")
+        # Process newly uploaded images
+
+        #raise Exception("thumbnail retour {} ".format( request.FILES))
+        for uploaded_image in request.FILES.getlist('images-0-image'):
+            # processus de resize images
+            # Enregistrer l'image téléchargée sur le disque temporaire
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                for chunk in uploaded_image.chunks():
+                    temp_file.write(chunk)
+                temp_file.flush()
+            
+            # Créer une nouvelle instance de ProductImage pour chaque fichier téléchargé
+            new_image = pro_models.ProductImage(product=obj, image=uploaded_image)
+        
+            thumbnail_path, large_path = sh_utils.process_resize_image(new_image, output_dir)
+            uploaded_image.large_path = os.path.join("/media/images/", os.path.basename(large_path))
+            uploaded_image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
+            # Enregistrer le ProductImage
+            #uploaded_image.save()
+        
+        return formset.save()            
+            
     def save_model(self, request, obj, form, change):
         """
         Custom save method to process images when saving a Product instance.
@@ -59,7 +92,6 @@ class ImmoProductAdmin(admin.ModelAdmin):
             product_image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
             product_image.save()
 
-
-@admin.register(sh_models.ItemArticle)
-class ItemArticleAdmin(admin.ModelAdmin):
-    list_display =  [field.name for field in sh_models.ItemArticle._meta.get_fields()]
+@admin.register(pro_models.ProductImage )
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ['image', 'thumbnail_path', 'large_path' ]

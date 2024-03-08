@@ -7,20 +7,20 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
-from immoshop import models as msh_models
 from core.utils import get_product_model 
 from cart.forms import CartAddProductForm
 from product import models as pro_models
+from core.taxonomy import models as tax_models
 
 
 product_model = get_product_model()
 
 def product_list(request, category_slug=None):
     category = None
-    categories = pro_models.Category.objects.all()
+    categories = tax_models.Category.objects.all()
     products = pro_models.Product.objects.filter(available=True)
     if category_slug:
-        category = get_object_or_404(pro_models.Category, slug=category_slug)
+        category = get_object_or_404(tax_models.Category, slug=category_slug)
         products = pro_models.Product.objects.filter(category=category)
 
     pro_context = {
@@ -34,10 +34,10 @@ def product_list(request, category_slug=None):
 def product_immo_list(request, category_slug=None):
     products_list = product_model.objects.all()
     category = None
-    categories = pro_models.Category.objects.all()
+    categories = tax_models.Category.objects.all()
     #
     if category_slug:
-        category = get_object_or_404(pro_models.Category, slug=category_slug)
+        category = get_object_or_404(tax_models.Category, slug=category_slug)
     
     context = { 'products' : products_list,
                 'category': category,
@@ -50,7 +50,7 @@ def product_immo_detail(request, product_id, slug):
     return render(request, "immoshop/product_detail.html", context={})
 
 class ProductDetailView(DetailView): # new
-    model = msh_models.ImmoProduct
+    model = pro_models.ImmoProduct
     template_name = "immoshop/product_detail.html"
     context_object_name = "product"
     

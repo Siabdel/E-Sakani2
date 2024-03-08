@@ -29,9 +29,9 @@ class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
 
 class CategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display = ['title', 'slug', 'parent', ]
-    fields = ('parent',  'title', 'slug', 'photo', )
+    prepopulated_fields = {'slug': ('name',)}
+    list_display = ['name', 'slug',  ]
+    fields = ('name', 'slug',  )
 
     empty_value_display = '-empty-'
     form = DocumentForm
