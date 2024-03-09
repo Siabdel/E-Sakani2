@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 # from ofschedule.models import DjangoMachine
 from django.conf import settings
 
+
+
 # -----------------------------------------
 # -- Item CART (Panier d'articles en base) 
 # -----------------------------------------

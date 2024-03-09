@@ -8,15 +8,27 @@ from django.conf import settings
 
 
 
+class ProductManager(models.Manager):
+    def get_queryset(self):
+        return super(ProductManager, self).get_queryset().filter(is_active=True)
 class BaseProduct(models.Model):
     name = models.CharField(max_length=100, db_index=True)
-    slug = models.SlugField(max_length=100, db_index=True)
+    slug = models.SlugField(max_length=255, db_index=True)
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    regular_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     available = models.BooleanField(default=True)
     stock = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    image = models.ImageField(upload_to='images/', default='images/default.png')
+    in_stock = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+    objects = models.Manager()
+    products = ProductManager()
+
 
     class Meta:
         abstract = True

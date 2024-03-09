@@ -5,6 +5,7 @@ from core import utils as sh_utils
 from product import models as pro_models
 from immoshop import models as sh_models
 from django.conf import settings
+from product.admin import ProductSpecificationInline, ProductSpecificationValueInline
 
 
 # Register your models here.
@@ -16,7 +17,8 @@ class ImmoProductImageInline(admin.TabularInline):
 
 @admin.register(pro_models.ImmoProduct)
 class ImmoProductAdmin(admin.ModelAdmin):
-    inlines = [ImmoProductImageInline]
+    #inlines = [ImmoProductImageInline,]
+    inlines = [ProductSpecificationValueInline, ImmoProductImageInline, ]
 
     list_display = ['name', 'slug', 'price', 'stock', 'available', 'created_at', 'updated_at']
     list_filter = ['available', 'created_at', 'updated_at']

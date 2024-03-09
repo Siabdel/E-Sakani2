@@ -24,11 +24,9 @@ from django.db import models
 #from django.db.models import permalink
 from django.conf import settings
 from django.urls import reverse, resolve
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
-
 from django.conf import settings
 
 class Category(models.Model):
@@ -36,7 +34,6 @@ class Category(models.Model):
     slug = models.SlugField(max_length=150, unique=True ,db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         ordering = ('name', )
         verbose_name = 'category'

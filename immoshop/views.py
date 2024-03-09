@@ -12,8 +12,15 @@ from cart.forms import CartAddProductForm
 from product import models as pro_models
 from core.taxonomy import models as tax_models
 
-
+# product Model setting
 product_model = get_product_model()
+
+def category_list(request, catalog_slug=None ):
+    category = get_object_or_404(category, slug=catalog_slug)
+    products = Product.objects.filter(
+        category__in = Categorie.objects.get(name=category_slug).get_descendants(include_self=False)
+    )
+    
 
 def product_list(request, category_slug=None):
     category = None
