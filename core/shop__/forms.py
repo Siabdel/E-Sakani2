@@ -1,2 +1,0 @@
-class CartAddProductForm:
-    pass

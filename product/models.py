@@ -6,7 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.auth.models import User
 from django.conf import settings
 from core.taxonomy import models as tax_models
-from core.base_product import models as bpro_models
+from core.base_product import models as base_models
 from core.taxonomy import models as core_models
 
 from mptt.models import MPTTModel, TreeForeignKey
@@ -59,16 +59,16 @@ class ProductSpecificationValue(models.Model):
     value   = models.CharField(_("Value"), max_length=255)
     
 # Create your Product.
-class Product(bpro_models.BaseProduct):
+class Product(base_models.BaseProduct):
     category = models.ForeignKey(MPCategory, related_name='products', 
                                  null=True, blank=True,
                                  on_delete=models.CASCADE)
 
-class ProductImage(bpro_models.BaseProductImage):
+class ProductImage(base_models.BaseProductImage):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
     
 
-class ImmoProduct(bpro_models.BaseProduct):
+class ImmoProduct(base_models.BaseProduct):
     product_type = models.ForeignKey(ProductType, verbose_name=_(""), on_delete=models.CASCADE)
     category = models.ForeignKey(MPCategory, null=True, blank=True, 
                                  related_name='immo_products', on_delete=models.CASCADE)
@@ -80,5 +80,5 @@ class ImmoProduct(bpro_models.BaseProduct):
     def get_absolute_url(self):
         return reverse("immoshop:product_immo_detail", args=[str(self.id)])
 
-class ImmoProductImage(bpro_models.BaseProductImage):
+class ImmoProductImage(base_models.BaseProductImage):
     product = models.ForeignKey(ImmoProduct, related_name="images", on_delete=models.CASCADE)

@@ -9,7 +9,6 @@ class ProductSpecificationInline(admin.TabularInline):
 
 class ProductSpecificationValueInline(admin.TabularInline):
     model = pro_models.ProductSpecificationValue
-
     
 @admin.register(pro_models.ProductType)
 class ProductTypeAdmin(admin.ModelAdmin):
@@ -20,4 +19,7 @@ class ProductSpecificationValue(admin.ModelAdmin):
     list_display =  [field.name for field in pro_models.ProductSpecificationValue._meta.get_fields()]
 
     
-admin.site.register(pro_models.MPCategory, MPTTModelAdmin)
+@admin.register(pro_models.MPCategory)
+class ProductCategoyAdmin(MPTTModelAdmin):
+    list_display = ["name", "name",]
+    prepopulated_fields = {'slug': ('name',), }

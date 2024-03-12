@@ -1,3 +1,4 @@
+# models.py
 from typing import Any, MutableMapping
 from django.db import models
 from django.urls import reverse
@@ -7,8 +8,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.auth.models import User
 # from ofschedule.models import DjangoMachine
 from django.conf import settings
-
-
+from core.base_product import models as base_models
 
 # -----------------------------------------
 # -- Item CART (Panier d'articles en base) 
@@ -70,42 +70,7 @@ class ItemManager(models.Manager):
 
 class ItemRaw(models.Model):
     raw_message = models.JSONField()
-
-class BaseItemArticle(models.Model):    
-    quantity = models.IntegerField(verbose_name=_('quantity'))
-    unit_price = models.DecimalField(max_digits=18, decimal_places=2, 
-                                     verbose_name=_('unit price'))
-     # product as generic relation
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField() 
-    # quand
-    created_at  = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        abstract = True
-        verbose_name = _('ItemArticle')
-        verbose_name_plural = _('ItemArticles')
-        ordering = ('-created_at',)
-    
-    @property
-    def total_price(self):
-        return self.quantity * self.unit_price
-
-    # product
-    def get_product(self):
-        return self.content_type.get_object_for_this_type(pk=self.object_id)
-    
-    def set_product(self, product):
-        self.content_type = ContentType.objects.get_for_model(type(product))
-        self.object_id = product.pk
-    
-    product = property(get_product, set_product) 
-
-   
-    def __str__(self):
-        return "product : {}".format(self.product)
-    
-class ItemArticle(BaseItemArticle):    
+class ItemArticle(base_models.BaseItemArticle):    
     cart = models.ForeignKey(ShopCart, related_name='items', on_delete=models.CASCADE )
     # product as generic relation
     content_object = GenericForeignKey('content_type', 'object_id')

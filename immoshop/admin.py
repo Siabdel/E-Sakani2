@@ -6,13 +6,17 @@ from product import models as pro_models
 from immoshop import models as sh_models
 from django.conf import settings
 from product.admin import ProductSpecificationInline, ProductSpecificationValueInline
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 
 # Register your models here.
 class ImmoProductImageInline(admin.TabularInline):
     model = pro_models.ImmoProductImage
-    exlude = ('thumbnail_path', 'large_path',  )
-    readonly_fields = ('thumbnail_path', 'large_path',)
+    # exlude = ('thumbnail_path', 'large_path',  )
+    # readonly_fields = ('thumbnail_path', 'large_path',)
+    max_num=1
 
 
 @admin.register(pro_models.ImmoProduct)
@@ -27,7 +31,7 @@ class ImmoProductAdmin(admin.ModelAdmin):
     # readonly_fields = ('thumbnail_path', 'large_path',  )
     exlude = ('thumbnail_path', 'large_path',  )
     
-    def save_model(self, request, obj, form, change):
+    def save_model__(self, request, obj, form, change):
         """
         Custom save method to process images when saving a Product instance.
         """
@@ -45,13 +49,13 @@ class ImmoProductAdmin(admin.ModelAdmin):
                 image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
                 image.save() 
 
-    def save_related(self, request, form, formsets, change):
+    def save_related__(self, request, form, formsets, change):
         output_dir = os.path.join(settings.MEDIA_ROOT, "images")
         super().save_related(request, form, formsets, change)
         
         # Accéder à l'instance de Product nouvellement sauvegardée
         product_instance = form.instance
-        
+       
         # Modifier les objets ProductImage associés
         for product_image in product_instance.images.all():
             # processus de resize images

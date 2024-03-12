@@ -10,24 +10,31 @@ from django.views.generic import ListView, DetailView
 from core.utils import get_product_model 
 from cart.forms import CartAddProductForm
 from product import models as pro_models
+from immoshop import models as msh_models 
 from core.taxonomy import models as tax_models
 
 # product Model setting
 product_model = get_product_model()
 
-def category_list(request, catalog_slug=None ):
-    category = get_object_or_404(category, slug=catalog_slug)
-    products = Product.objects.filter(
-        category__in = Categorie.objects.get(name=category_slug).get_descendants(include_self=False)
+def category_list(request, categoy_slug=None ):
+    category = get_object_or_404(pro_models.MPCategory, slug=categoy_slug)
+    products = pro_models.ImmoProduct.objects.filter(
+        category__in = pro_models.MPCategory.objects
+        .get(name=categoy_slug).get_descendants(include_self=False)
     )
+    context = {
+            "categoy": category,
+            "products": products,
+            }
+    return render(request, "immoshop/category_list.html", context=context)
     
 
 def product_list(request, category_slug=None):
     category = None
-    categories = tax_models.Category.objects.all()
+    categories = pro_models.MPCategory.objects.all()
     products = pro_models.Product.objects.filter(available=True)
     if category_slug:
-        category = get_object_or_404(tax_models.Category, slug=category_slug)
+        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
         products = pro_models.Product.objects.filter(category=category)
 
     pro_context = {
@@ -37,14 +44,29 @@ def product_list(request, category_slug=None):
     }
     return render(request, "immoshop/product_detail.html", context=pro_context)
 
+def product_home(request, category_slug=None):
+    products_list = product_model.objects.all()
+    category = None
+    categories = pro_models.MPCategory.objects.all()
+    #
+    if category_slug:
+        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
+    
+    context = { 'products' : products_list,
+                'category': category,
+                'categories': categories,
+                'cart_product_form' : CartAddProductForm()
+               } 
+    return render(request, "immoshop/home.html", context=context)
+
 @login_required
 def product_immo_list(request, category_slug=None):
     products_list = product_model.objects.all()
     category = None
-    categories = tax_models.Category.objects.all()
+    categories = pro_models.MPCategory.objects.all()
     #
     if category_slug:
-        category = get_object_or_404(tax_models.Category, slug=category_slug)
+        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
     
     context = { 'products' : products_list,
                 'category': category,
