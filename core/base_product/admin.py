@@ -13,6 +13,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ProductImageInline(admin.TabularInline):
     model = pro_models.ProductImage
+    exlude = ('thumbnail_path', 'large_path',  )
+    readonly_fields = ('thumbnail_path', 'large_path',  )
+
 
 @admin.register(pro_models.Product )
 class ProductAdmin(admin.ModelAdmin):
@@ -23,7 +26,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['price', 'stock', 'available']
     prepopulated_fields = {'slug': ('title',)}
     exlude = ('thumbnail_path', 'large_path', 'title', 'slug', )
-    readonly_fields = ('thumbnail_path', 'large_path',  )
     
     def save_formset__(self, request, form, formset, change):
         """ Cette méthode est appelée lors de l'enregistrement des 

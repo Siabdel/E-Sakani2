@@ -14,11 +14,8 @@ from django.contrib.auth.models import User
 # Register your models here.
 class ImmoProductImageInline(admin.TabularInline):
     model = pro_models.ImmoProductImage
-    # exlude = ('thumbnail_path', 'large_path',  )
-    # readonly_fields = ('thumbnail_path', 'large_path',)
-    max_num=1
-
-
+    exlude = ('thumbnail_path', 'large_path',  )
+    readonly_fields = ('thumbnail_path', 'large_path',)
 @admin.register(pro_models.ImmoProduct)
 class ImmoProductAdmin(admin.ModelAdmin):
     #inlines = [ImmoProductImageInline,]
