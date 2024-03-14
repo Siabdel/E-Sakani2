@@ -57,7 +57,7 @@ class ProductAdmin(admin.ModelAdmin):
         
         return formset.save()            
             
-    def save_model(self, request, obj, form, change):
+    def save_model__(self, request, obj, form, change):
         """
         Custom save method to process images when saving a Product instance.
         """

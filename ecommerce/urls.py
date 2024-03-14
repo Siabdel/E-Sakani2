@@ -25,4 +25,15 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     #path('pro/', include('shop.urls')),
     path('mfu/', include("mfilesupload.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 
+# ... the rest of your URLconf goes here ...
+## add static 
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+## add static 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# add debug_toolbar 
+if settings.DEBUG :
+    import debug_toolbar
+    urlpatterns += path('__debug__', include(debug_toolbar.urls) ),
+ 

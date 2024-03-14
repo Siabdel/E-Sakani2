@@ -4,14 +4,16 @@
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
             {% for image in product_images %}
-                <li data-target="#carouselExampleIndicators" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %} class="active" {% endif %}></li>
+                <li data-target="#carouselExampleIndicators" 
+                    data-slide-to="{{ forloop.counter0 }}" 
+                    {% if forloop.first %} class="active" {% endif %}></li>
             {% endfor %}
         </ol>
         <div class="carousel-inner">
                 
             {% for image in product_images %}
-                <div class="product-image carousel-item {% if forloop.first %} active {% endif %}">
-                    <img src="{{ image.large_path }}" alt="{{ product.name }}" class="rounded-lg img-fluid" id="product-image" style="height:800; widht:600">
+                <div class="card h-100 product-image carousel-item {% if forloop.first %} active {% endif %}">
+                    <img src="/{{ image.large_path }}" alt="{{ image.large_path.url }}" class="rounded-lg img-fluid" id="product-image" style="height:800; widht:600">
                 </div>
             {% endfor %}
         </div>

@@ -65,10 +65,9 @@
                 </div>
                 <div class="row pt-lg-5">
                     {% for product in products %}
-                    <div class="row">
-                        <div class="col-lg-6 col-md-6 mb-4">
+                        <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card h-100">
-                                <a href="{% url 'immoshop:product_immo_detail' product.pk %}">
+                                <a href="#">
                                     {% if product.default_image %}
                                     <img class="card-img-top" src="{{ product.default_image.url }}"
                                         alt={{ product.default_image.url }}"
@@ -77,22 +76,15 @@
                                      
                                     {% endif %}
                                 </a>
-                            </div>
-                        </div>
-                         <div class="col-lg-6 col-md-6 mb-4">
-                            <div class="card h-100">
-                               
                                 <div class="card-body">
                                     <h4 class="card-title">
                                         <a href="{% url 'immoshop:product_immo_detail' product.pk %}">
-                                            {{ product.name | slice:"0:30" }}
-                                        </a>
+                                            {{ product.name | slice:"0:30" }}</a>
                                     </h4>
-                                    <h5> <p class="text-left">Prix : {{ product.price }} Euro</p> </h5>
-                                    <p class="card-text">Description : {{ product.description }} </p>
-                                    {% for spec in product.options %}  
-                                        <p class="card-text">{{ spec.name }}  : {{ spec.value }} </p>
-                                    {% endfor %}
+                                    <h5> <p class="text-center">{{ product.price }} Euro</p> </h5>
+
+                                    <p class="text-center">{{ product.price }} Euro</p>
+                                    <p class="card-text">{{ product.description }} </p>
                                 </div>
                                 <div class="card-footer">
                                     <div class="col-xs-12 col-md-6">
@@ -102,7 +94,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        
                     {% endfor %}
 
                 </div>

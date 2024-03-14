@@ -64,7 +64,7 @@ class CartItemArticle(ListView): # new
         moncart = sh_models.ShopCart.objects.get_or_create_cart(user=self.request.user)
         # items queryset
         items = sh_models.ItemArticle.objects.filter(cart=moncart)
-        #messages.add_message(self.request, messages.INFO, f"mes items dans panier {items}")
+        messages.add_message(self.request, messages.INFO, f"mes items dans panier {items}")
         
         # Ajouter le form pour chaque ligne du panier
         for item in items :

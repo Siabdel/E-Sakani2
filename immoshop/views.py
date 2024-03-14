@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
-from core.utils import get_product_model 
+from core.utils import get_product_model, Dict2Obj
 from cart.forms import CartAddProductForm
 from product import models as pro_models
 from immoshop import models as msh_models 
@@ -52,6 +52,19 @@ def product_home(request, category_slug=None):
     if category_slug:
         category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
     
+    # ProductSpecificationValues
+    for product in products_list:
+        options = [] 
+        psv = pro_models.ProductSpecificationValue.objects.filter(product=product)
+        for spec in psv:
+            attributes = {"product": spec.product.id,
+                       "name": spec.specification.name,
+                       "value": spec.value,
+                    }
+            options.append(Dict2Obj(attributes))
+        ## add options
+        product.options = options
+    
     context = { 'products' : products_list,
                 'category': category,
                 'categories': categories,
@@ -89,10 +102,23 @@ class ProductDetailView(DetailView): # new
         # formulaire 
         cart_product_form = CartAddProductForm()
         # Récupérer les images associées à ce produit en utilisant la méthode que nous avons définie dans le modèle
-        product_images = self.get_object().images.all()
+        product = self.get_object()
+        product_images = product.images.all()
+        # les psecifications du produit 
+        
+        options = [] 
+        psv = pro_models.ProductSpecificationValue.objects.filter(product=product)
+        for spec in psv:
+            attributes = {"product": spec.product.id,
+                       "name": spec.specification.name,
+                       "value": spec.value,
+                    }
+            options.append(Dict2Obj(attributes))
+        ## add options
+        product.options = options
 
         context = {
-            'product': self.get_object(),
+            'product':  product,
             'product_images' : product_images,
             'image' : product_images.first(),
             'cart_product_form': cart_product_form

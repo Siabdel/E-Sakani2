@@ -28,7 +28,7 @@ class ImmoProductAdmin(admin.ModelAdmin):
     # readonly_fields = ('thumbnail_path', 'large_path',  )
     exlude = ('thumbnail_path', 'large_path',  )
     
-    def save_model__(self, request, obj, form, change):
+    def save_model(self, request, obj, form, change):
         """
         Custom save method to process images when saving a Product instance.
         """
@@ -42,8 +42,8 @@ class ImmoProductAdmin(admin.ModelAdmin):
                 # processus de resize images
                 thumbnail_path, large_path = sh_utils.process_resize_image(image, output_dir)
                 # You can save these paths to the database if needed
-                image.large_path = os.path.join("/media/images/", os.path.basename(large_path))
-                image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
+                image.large_path = os.path.join("media/images/", os.path.basename(large_path))
+                image.thumbnail_path = os.path.join("media/images/", os.path.basename(thumbnail_path))
                 image.save() 
 
     def save_related__(self, request, form, formsets, change):

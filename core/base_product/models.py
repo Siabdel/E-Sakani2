@@ -63,14 +63,23 @@ class BaseProductImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
 
-    def save(self, *args, **kwargs):
-        self.large_path = make_thumbnail(self.image, size=(800, 600))
-        self.thumbnail = make_thumbnail(self.image, size=(100, 100))
-        self.title = self.image.name
+    def save__(self, *args, **kwargs):
+        #raise Exception(f"args {args} kwargs = {kwargs}")
+        img_100 = make_thumbnail(self.image, size=(100, 100))
+        img_800 = make_thumbnail(self.image, size=(800, 600))
+        
+        output_dir = os.path.join(settings.MEDIA_ROOT, "images")
+         # Enregistre les images traitées
+        base_name = os.path.basename(img_100.name)
+        self.thumbnail = os.path.join(output_dir, f"thumb_100x100_{base_name}")
+        #
+        base_name = os.path.basename(img_100.name)
+        self.large_path = os.path.join(output_dir, f"large_800x600_{base_name}")
+        #raise Exception(f"image attribues = {img_100.name}")
         super().save(*args, **kwargs)
         
     def __str__(self):
-        return f"Image for {self.title}"
+        return f"Image for {self.image.name}"
 
     class Meta:
         abstract = True

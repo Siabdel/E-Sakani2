@@ -9,6 +9,16 @@ from django.conf import settings
 from django.apps import apps
 
 
+class Dict2Obj(object):
+    """
+    Turns a dictionary into a class
+    """
+    #----------------------------------------------------------------------
+    def __init__(self, dictionary):
+        """Constructor"""
+        for key in dictionary:
+            setattr(self, key, dictionary[key])
+
 class DependencyError(Exception):
     def __init__(self, app_name):
         self._app_name = app_name

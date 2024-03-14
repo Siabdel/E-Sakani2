@@ -28,13 +28,20 @@
             <div class="product">
                 <h3>{{ product.name }}</h3>
                 <h6><a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a></h6>
-                <p class="text-muted">Kshs. {{ product.price }}</p>
-                <form action="{% url 'cart:cart_add' product.pk %}" method="post">
+                <p class="text-muted">Prix : {{ product.price }} DH</p>
+                <!--Specifications du produit -->
+                {% for spec in product.options %}  
+                    <p class="card-text">{{ spec.name }}  : {{ spec.value }} </p>
+                {% endfor %}
+                <p class="card-text"> Description :
+                     {{ product.description|safe|linebreaksbr }}</p>
+
+                <!-- action ajouter dans panier -->
+                <form action="{% url 'cart:cart_add_item' product.pk %}" method="post">
                     {% csrf_token %}
                     {{ cart_product_form }}
-                    <input type="submit" value="add to cart" class="btn btn-warning">
+                    <input type="submit" value="ajouter dans le panier" class="btn btn-warning">
                 </form>
-                <p>{{ product.description|safe|linebreaksbr }}</p>
             </div>
         </div>
     </div><!-- /.row- -->
@@ -42,7 +49,8 @@
  <!-- Contenu de l'image en plein écran -->
     <div class="fullscreen-image" id="fullscreen-image">
         <button class="btn btn-success close-btn">&times; close </button>
-        <img src="{{ image.large_path }}" alt="{{ product.name }}" class="img-fluid">
+        <img class="card-img-top" src="{% static  image.large_path.url %}" alt="Item 1">
+        <img src="{% static image.large_path.url %}" alt="{{ product.name }}" class="img-fluid">
     </div>
 </div><!-- /.container -->
  <!-- Script pour activer le plein écran -->
