@@ -32,7 +32,6 @@ class BaseProduct(models.Model):
     objects = models.Manager()
     products = ProductManager()
 
-
     class Meta:
         abstract = True
         ordering = ('name', )

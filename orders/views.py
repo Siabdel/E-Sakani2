@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import OrderItem
-from .forms import OrderCreateForm
+from orders.models import OrderItem
+from orders.forms import OrderCreateForm
 from cart.cart import Cart
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,10 +17,14 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+from immoshop import models as msh_models
 from weasyprint import HTML
+from django.contrib import messages
+from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
 
 
-def order_create(request):
+def order_create_session(request):
     cart = Cart(request)
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)
@@ -71,3 +75,33 @@ def generate_pdf_invoice(request, invoice_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = "filename=%s" % (pdf_filename)
     return response
+
+def order_create(request):
+    cart = Cart(request) 
+    cart_id = request.session[settings.CART_SESSION_ID]
+    #raise Exception(f" cart={cart}, card_id={cart_id}")
+    
+    shop_cart = msh_models.ShopCart.objects.get(id=cart_id)
+    items = shop_cart.items.all()
+    
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    price=item.product.price,
+                    quantity=item.quantity
+                )
+            # vider le panier 
+            cart.clear()
+        return render(request, 'orders/order/created.html', {'order': order})
+    else:
+        form = OrderCreateForm()
+        context = {
+                    'items':items,
+                    'form': form
+                   }
+    return render(request, 'orders/order/create.html', context )
