@@ -20,11 +20,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', include('immoshop.urls'), name='home'),
+    path('sh', include('core.shop.urls'), name='sh_home'),
     path('admin/', admin.site.urls),
     path('cart/', include('cart.urls')),
-    path('orders/', include('orders.urls')),
-    #path('pro/', include('shop.urls')),
-    path('mfu/', include("mfilesupload.urls")),
+    path('orders/', include('core.orders.urls')),
+    path('mfu/', include("core.mfilesupload.urls")),
 ] 
 # ... the rest of your URLconf goes here ...
 ## add static 

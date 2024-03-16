@@ -10,7 +10,7 @@ from django.views.generic import ListView, DetailView
 from core.utils import get_product_model, Dict2Obj
 from cart.forms import CartAddProductForm
 from core.product import models as pro_models
-from core.shop import models as sh_models 
+from core.shop import models as msh_models 
 from core.taxonomy import models as tax_models
 
 # product Model setting

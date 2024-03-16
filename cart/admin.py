@@ -1,5 +1,5 @@
 from django.contrib import admin
-from immoshop import models as msh_models
+from core.shop import models as msh_models
 
 
 @admin.register(msh_models.ShopCart)

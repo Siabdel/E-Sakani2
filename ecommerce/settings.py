@@ -36,19 +36,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
-    'product.apps.ProductConfig', # Shop
-    'immoshop.apps.ImmoShopConfig', # Shop
-    'cart.apps.CartConfig', # Cart
-    'orders.apps.OrdersConfig', # Orders
+    'mptt',
+    'core.product', # Product
     'core.taxonomy', # new
-    'mfilesupload.apps.MfilesuploadConfig', # Multi files upload
+    'core.orders', # Orders
+    'core.shop', # Shop
+    'cart.apps.CartConfig', # Cart
+    'core.mfilesupload', # Multi files upload
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mptt'
+    # local app
+    'immoshop.apps.ImmoShopConfig', # Cart
+    
 ]
 
 MIDDLEWARE = [
@@ -93,7 +96,7 @@ DATABASES = {
     }
 }
 
-CART_PRODUCT_MODEL = 'product.ImmoProduct'
+CART_PRODUCT_MODEL = 'core.product.ImmoProduct'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

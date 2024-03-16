@@ -13,8 +13,8 @@ from django.contrib import messages
 from .cart import Cart
 from .forms import CartAddProductForm
 from core.utils import get_product_model
-from immoshop import models as sh_models
-from product import models as pro_models
+from core.shop import models as sh_models
+from core.product import models as pro_models
 
 
 Product_model = get_product_model()

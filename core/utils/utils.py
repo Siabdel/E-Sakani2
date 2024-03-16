@@ -4,7 +4,7 @@ import os
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
-from product import models as pro_models
+from core.product import models as pro_models
 from django.conf import settings
 from django.apps import apps
 
@@ -58,7 +58,7 @@ def make_thumbnail(image, size=(100, 100)):
     return thumbnail
 def get_product_model():
     product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', pro_models.Product)
-    app_label, model_name = product_model_string.split('.')
+    core, app_label, model_name = product_model_string.split('.')
     #raise Exception(f"model = {app_label} - {model_name}")
 
     return apps.get_model(app_label, model_name)
