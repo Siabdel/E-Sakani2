@@ -58,7 +58,7 @@ def make_thumbnail(image, size=(100, 100)):
     return thumbnail
 def get_product_model():
     product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', pro_models.Product)
-    core, app_label, model_name = product_model_string.split('.')
+    app_label, model_name = product_model_string.split('.')
     #raise Exception(f"model = {app_label} - {model_name}")
 
     return apps.get_model(app_label, model_name)

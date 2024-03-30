@@ -13,7 +13,7 @@ from core.shop import models as sh_models
 from core.product import models as pro_models
 
 class ImmoProduct(base_models.BaseProduct):
-    product_type = models.ForeignKey(pro_models.ProductType, verbose_name=_(""), on_delete=models.CASCADE)
+    product_type = models.ForeignKey(pro_models.ProductType, verbose_name=_("product type"), on_delete=models.CASCADE)
     category = models.ForeignKey(pro_models.MPCategory, null=True, blank=True, 
                                  related_name='immo_products', on_delete=models.CASCADE)
     
@@ -26,5 +26,8 @@ class ImmoProduct(base_models.BaseProduct):
 class ImmoProductImage(base_models.BaseProductImage):
     cart = models.ForeignKey(sh_models.ShopCart, related_name='items', on_delete=models.CASCADE )
     # product as generic relation
+       # product as generic relation
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField() 
     content_object = GenericForeignKey('content_type', 'object_id')
     # My Manager 

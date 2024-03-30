@@ -96,7 +96,7 @@ DATABASES = {
     }
 }
 
-CART_PRODUCT_MODEL = 'core.product.ImmoProduct'
+CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

@@ -11,6 +11,11 @@ from core.taxonomy import models as core_models
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+# Create your Product.
+class Product(base_models.BaseProduct):
+    category = models.ForeignKey("MPCategory", related_name='products', null=True, blank=True, on_delete=models.CASCADE)
+
+
 class MPCategory(MPTTModel):
     """ Category table implement MPTT"""
     name = models.CharField(_('Category Name'), help_text=_('Requird and uniq'), 
@@ -54,31 +59,10 @@ class ProductSpecificationValue(models.Model):
     """ The product specification value table hold each of the 
     product individal specification or bespoke features.
     """
-    product = models.ForeignKey("ImmoProduct", verbose_name=_(""), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_(""), on_delete=models.CASCADE)
     specification = models.ForeignKey(ProductSpecification, on_delete=models.RESTRICT)
     value   = models.CharField(_("Value"), max_length=255)
     
-# Create your Product.
-class Product(base_models.BaseProduct):
-    category = models.ForeignKey(MPCategory, related_name='products', 
-                                 null=True, blank=True,
-                                 on_delete=models.CASCADE)
 
 class ProductImage(base_models.BaseProductImage):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
-    
-
-class ImmoProduct(base_models.BaseProduct):
-    product_type = models.ForeignKey(ProductType, verbose_name=_(""), on_delete=models.CASCADE)
-    category = models.ForeignKey(MPCategory, null=True, blank=True, 
-                                 related_name='immo_products', on_delete=models.CASCADE)
-    
-    
-    def get_images(self):
-        return self.images.all()
-
-    def get_absolute_url(self):
-        return reverse("immoshop:product_immo_detail", args=[str(self.id)])
-
-class ImmoProductImage(base_models.BaseProductImage):
-    product = models.ForeignKey(ImmoProduct, related_name="images", on_delete=models.CASCADE)

@@ -92,7 +92,7 @@ def product_immo_detail(request, product_id, slug):
     return render(request, "immoshop/product_detail.html", context={})
 
 class ProductDetailView(DetailView): # new
-    model = pro_models.ImmoProduct
+    model = pro_models.Product
     template_name = "immoshop/product_detail.html"
     context_object_name = "product"
     

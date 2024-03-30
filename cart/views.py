@@ -11,10 +11,10 @@ from django.views.decorators.http import require_POST
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from .cart import Cart
-from .forms import CartAddProductForm
+from cart.forms import CartAddProductForm
 from core.utils import get_product_model
 from core.shop import models as sh_models
-from core.product import models as pro_models
+from immoshop import models as pro_models
 
 
 Product_model = get_product_model()

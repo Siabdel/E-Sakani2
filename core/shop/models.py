@@ -71,7 +71,7 @@ class ItemManager(models.Manager):
 class ItemRaw(models.Model):
     raw_message = models.JSONField()
 class ItemArticle(base_models.BaseItemArticle):    
-    cart = models.ForeignKey(ShopCart, related_name='items', on_delete=models.CASCADE )
+    cart = models.ForeignKey(ShopCart, related_name='item_articles', on_delete=models.CASCADE )
     # product as generic relation
     content_object = GenericForeignKey('content_type', 'object_id')
     # My Manager 
