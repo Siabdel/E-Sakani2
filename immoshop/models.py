@@ -12,10 +12,7 @@ from core.base_product import models as base_models
 from core.shop import models as sh_models
 from core.product import models as pro_models
 
-class ImmoProduct(base_models.BaseProduct):
-    product_type = models.ForeignKey(pro_models.ProductType, verbose_name=_("product type"), on_delete=models.CASCADE)
-    category = models.ForeignKey(pro_models.MPCategory, null=True, blank=True, 
-                                 related_name='immo_products', on_delete=models.CASCADE)
+class ImmoProduct(pro_models.Product):
     
     def get_images(self):
         return self.images.all()
@@ -24,10 +21,14 @@ class ImmoProduct(base_models.BaseProduct):
         return reverse("immoshop:product_immo_detail", args=[str(self.id)])
 
 class ImmoProductImage(base_models.BaseProductImage):
-    cart = models.ForeignKey(sh_models.ShopCart, related_name='items', on_delete=models.CASCADE )
-    # product as generic relation
-       # product as generic relation
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField() 
-    content_object = GenericForeignKey('content_type', 'object_id')
-    # My Manager 
+    product = models.ForeignKey(ImmoProduct, related_name="immo_images", on_delete=models.CASCADE)
+
+    
+class ImmoProductSpecificationValue(models.Model):
+    """ The product specification value table hold each of the 
+    product individal specification or bespoke features.
+    """
+    product = models.ForeignKey(ImmoProduct, verbose_name=_(""), on_delete=models.CASCADE)
+    specification = models.ForeignKey(pro_models.ProductSpecification, on_delete=models.RESTRICT)
+    value   = models.CharField(_("Value"), max_length=255)
+    

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core.shop', # Shop
     'cart.apps.CartConfig', # Cart
     'core.mfilesupload', # Multi files upload
+    'polymorphic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

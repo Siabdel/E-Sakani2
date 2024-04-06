@@ -8,13 +8,13 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django_resized import ResizedImageField
 from core.utils import make_thumbnail
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 
 
-
-class ProductManager(models.Manager):
+class ProductManager(PolymorphicManager):
     def get_queryset(self):
         return super(ProductManager, self).get_queryset().filter(is_active=True)
-class BaseProduct(models.Model):
+class BaseProduct(PolymorphicModel):
     name = models.CharField(max_length=100, db_index=True)
     slug = models.SlugField(max_length=255, db_index=True)
     description = models.TextField(blank=True)
@@ -29,13 +29,13 @@ class BaseProduct(models.Model):
     in_stock = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     product_code = models.BigIntegerField(_("Product Code"), null=True, blank=True)
-    objects = models.Manager()
+    objects = ProductManager()
     products = ProductManager()
 
     class Meta:
         abstract = True
         ordering = ('name', )
-        index_together = (('id', 'slug'),)
+        #index_together = (('id', 'slug'),)
 
     def __str__(self):
         return self.name
@@ -114,7 +114,6 @@ class BaseItemArticle(models.Model):
     
     product = property(get_product, set_product) 
 
-   
     def __str__(self):
         return "product : {}".format(self.product)
     

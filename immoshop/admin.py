@@ -2,20 +2,29 @@ import os
 import tempfile
 from django.contrib import admin
 from core import utils as sh_utils
-from core.product import models as pro_models
-from core.shop import models as sh_models
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from core.product import models as pro_models
+from core.shop import models as sh_models
+from immoshop import models as immo_models 
 
+class ProductSpecificationInline(admin.TabularInline):
+    model = pro_models.ProductSpecification
+
+
+class ProductSpecificationValueInline(admin.TabularInline):
+    model = immo_models.ImmoProductSpecificationValue
 
 # Register your models here.
 class ImmoProductImageInline(admin.TabularInline):
-    model = pro_models.ImmoProductImage
+    model = immo_models.ImmoProductImage
     exlude = ('thumbnail_path', 'large_path',  )
     readonly_fields = ('thumbnail_path', 'large_path',)
-@admin.register(pro_models.ImmoProduct)
+
+    
+@admin.register(immo_models.ImmoProduct)
 class ImmoProductAdmin(admin.ModelAdmin):
     #inlines = [ImmoProductImageInline,]
     inlines = [ProductSpecificationValueInline, ImmoProductImageInline, ]
