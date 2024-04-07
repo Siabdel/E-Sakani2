@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 from core.product import models as pro_models
 from core.shop import models as sh_models
 from immoshop import models as immo_models 
+from core.base_product import models as base_models
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
 class ProductSpecificationInline(admin.TabularInline):
     model = pro_models.ProductSpecification
@@ -18,16 +21,22 @@ class ProductSpecificationValueInline(admin.TabularInline):
     model = immo_models.ImmoProductSpecificationValue
 
 # Register your models here.
-class ImmoProductImageInline(admin.TabularInline):
-    model = immo_models.ImmoProductImage
-    exlude = ('thumbnail_path', 'large_path',  )
+class ProductImageInline(StackedPolymorphicInline):
+    class ImmoProductImageInline(StackedPolymorphicInline.Child):
+        model = immo_models.ImmoProductImage
+        exlude = ('thumbnail_path', 'large_path',  )
+        readonly_fields = ('thumbnail_path', 'large_path',)
+    
+    model = pro_models.ProductImage
+    child_inlines = ( ImmoProductImageInline,)
     readonly_fields = ('thumbnail_path', 'large_path',)
 
     
 @admin.register(immo_models.ImmoProduct)
-class ImmoProductAdmin(admin.ModelAdmin):
+class ImmoProductAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
+    base_model = immo_models.ImmoProduct 
     #inlines = [ImmoProductImageInline,]
-    inlines = [ProductSpecificationValueInline, ImmoProductImageInline, ]
+    inlines = [ProductSpecificationValueInline, ProductImageInline, ]
 
     list_display = ['name', 'slug', 'price', 'stock', 'available', 'created_at', 'updated_at']
     list_filter = ['available', 'created_at', 'updated_at']
@@ -54,9 +63,10 @@ class ImmoProductAdmin(admin.ModelAdmin):
                 image.thumbnail_path = os.path.join("media/images/", os.path.basename(thumbnail_path))
                 image.save() 
 
-    def save_related__(self, request, form, formsets, change):
+    def save_related(self, request, form, formsets, change):
         output_dir = os.path.join(settings.MEDIA_ROOT, "images")
         super().save_related(request, form, formsets, change)
+
         
         # Accéder à l'instance de Product nouvellement sauvegardée
         product_instance = form.instance
@@ -66,6 +76,8 @@ class ImmoProductAdmin(admin.ModelAdmin):
             # processus de resize images
             thumbnail_path, large_path = sh_utils.process_resize_image(product_image, output_dir)
             # Faire des modifications sur les objets ProductImage thumbnail_path, large_path = sh_utils.process_resize_image(new_image, output_dir)
+
+
             product_image.large_path = os.path.join("/media/images/", os.path.basename(large_path))
             product_image.thumbnail_path = os.path.join("/media/images/", os.path.basename(thumbnail_path))
             product_image.save()
@@ -74,3 +86,8 @@ class ImmoProductAdmin(admin.ModelAdmin):
 @admin.register(sh_models.ItemArticle)
 class ItemArticleAdmin(admin.ModelAdmin):
     list_display =  [field.name for field in sh_models.ItemArticle._meta.get_fields()]
+
+#@admin.register(immo_models.ImmoProductImage)
+class ProductImage(admin.ModelAdmin):
+    pass
+    #list_display =  [field.name for field in immo_models.ImmoProductImage._meta.get_fields()]

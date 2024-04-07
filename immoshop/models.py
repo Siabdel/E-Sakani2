@@ -11,6 +11,8 @@ from django.conf import settings
 from core.base_product import models as base_models
 from core.shop import models as sh_models
 from core.product import models as pro_models
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+
 
 class ImmoProduct(pro_models.Product):
     
@@ -20,9 +22,8 @@ class ImmoProduct(pro_models.Product):
     def get_absolute_url(self):
         return reverse("immoshop:product_immo_detail", args=[str(self.id)])
 
-class ImmoProductImage(base_models.BaseProductImage):
-    product = models.ForeignKey(ImmoProduct, related_name="immo_images", on_delete=models.CASCADE)
-
+class ImmoProductImage(pro_models.ProductImage):
+    pass
     
 class ImmoProductSpecificationValue(models.Model):
     """ The product specification value table hold each of the 

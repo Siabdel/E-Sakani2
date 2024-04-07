@@ -53,7 +53,7 @@ class BaseProduct(PolymorphicModel):
         # /media/upload/product_images/2024/03/logo-appartement_I3pvvys.jpg
         return not os.path.exists(output_dir)
 
-class BaseProductImage(models.Model):
+class BaseProductImage(PolymorphicModel):
     title = models.CharField(_('Titre'), max_length=50, null=True, blank=True)
     slug = models.SlugField(max_length=255, db_index=True, null=True, blank=True)
     image = models.ImageField(upload_to='upload/product_images/%Y/%m/', blank=True)

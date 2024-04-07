@@ -46,7 +46,7 @@ class ShopCart(models.Model):
         super(ShopCart, self).save(*args, **kwargs) 
     
     def sum_items(self):
-        total_quantity = sum(item.quantity for item in self.items.all())
+        total_quantity = sum(item.quantity for item in self.item_articles.all())
         return total_quantity
  
     def __str__(self):
