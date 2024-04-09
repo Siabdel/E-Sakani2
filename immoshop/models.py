@@ -25,11 +25,8 @@ class ImmoProduct(pro_models.Product):
 class ImmoProductImage(pro_models.ProductImage):
     pass
     
-class ImmoProductSpecificationValue(models.Model):
+class ImmoProductSpecificationValue(pro_models.ProductSpecificationValue):
     """ The product specification value table hold each of the 
     product individal specification or bespoke features.
     """
-    product = models.ForeignKey(ImmoProduct, verbose_name=_(""), on_delete=models.CASCADE)
-    specification = models.ForeignKey(pro_models.ProductSpecification, on_delete=models.RESTRICT)
-    value   = models.CharField(_("Value"), max_length=255)
-    
+    pass

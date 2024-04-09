@@ -105,7 +105,7 @@ class ProductDetailView(DetailView): # new
         product = self.get_object()
         product_images = product.images.all()
         # les psecifications du produit 
-        ##raise Exception("images = ", product_images)
+        ## raise Exception("options = ", product.options)
 
         options = [] 
         psv = pro_models.ProductSpecificationValue.objects.filter(product=product)

@@ -8,7 +8,7 @@ from django.conf import settings
 from core.taxonomy import models as tax_models
 from core.base_product import models as base_models
 from core.taxonomy import models as core_models
-
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 from mptt.models import MPTTModel, TreeForeignKey
 
 # Create your Product.
@@ -55,7 +55,7 @@ class ProductSpecification(models.Model):
     def __str__(self):
         return self.name
     
-class ProductSpecificationValue(models.Model):
+class ProductSpecificationValue(PolymorphicModel):
     """ The product specification value table hold each of the 
     product individal specification or bespoke features.
     """

@@ -117,3 +117,4 @@ class BaseItemArticle(models.Model):
     def __str__(self):
         return "product : {}".format(self.product)
     
+

@@ -82,7 +82,7 @@ def order_create(request):
     #raise Exception(f" cart={cart}, card_id={cart_id}")
     
     shop_cart = msh_models.ShopCart.objects.get(id=cart_id)
-    items = shop_cart.items.all()
+    items = shop_cart.item_articles.all()
     
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)

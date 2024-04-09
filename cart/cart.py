@@ -121,7 +121,7 @@ class Cart(object):
 
     def clear(self):
         self.clear_session() 
-        for item in self.cart.items.all():
+        for item in self.cart.item_articles.all():
             item.delete()
 
     def is_empty(self):

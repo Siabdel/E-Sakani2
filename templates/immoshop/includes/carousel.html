@@ -12,7 +12,6 @@
         <div class="carousel-inner">
                 
             {% for image in product_images %}
-            {{ image.large_path }}
                 <div class="card h-100 product-image carousel-item {% if forloop.first %} active {% endif %}">
                     <img src="{{ image.large_path }}" alt="{{ image.large_path.url }}" class="rounded-lg img-fluid" id="product-image" style="height:800; widht:600">
                 </div>

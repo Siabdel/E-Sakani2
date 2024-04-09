@@ -17,8 +17,13 @@ class ProductSpecificationInline(admin.TabularInline):
     model = pro_models.ProductSpecification
 
 
-class ProductSpecificationValueInline(admin.TabularInline):
-    model = immo_models.ImmoProductSpecificationValue
+class ProductSpecificationValueInline(StackedPolymorphicInline):
+    class ImmoSpecificationValueInline(StackedPolymorphicInline.Child):
+        model = immo_models.ImmoProductSpecificationValue
+    
+    model = pro_models.ProductSpecificationValue
+    child_inlines = (ImmoSpecificationValueInline, )
+
 
 # Register your models here.
 class ProductImageInline(StackedPolymorphicInline):
