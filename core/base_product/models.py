@@ -118,3 +118,127 @@ class BaseItemArticle(models.Model):
         return "product : {}".format(self.product)
     
 
+class BaseProject(PolymorphicModel):
+    """
+    Base Project model
+    """
+    title   = models.CharField(max_length=100, verbose_name=_('title'))
+    slug    = models.SlugField(max_length=150, unique=True ,db_index=True)
+    description = models.TextField(null=True, blank=True, verbose_name=_('description'))
+    author      = models.ForeignKey('auth.User', related_name='created_projects', null=True, blank=True, verbose_name=_('created by'), on_delete=models.SET_NULL)
+    manager     = models.ForeignKey('auth.User', related_name='managed_projects', null=True, blank=True, verbose_name=_('project manager'), on_delete=models.SET_NULL)
+    status      = models.CharField(_('status'), choices= settings.PROJECT_STATUS_CHOICES, default= settings.PROJECT_DEFAULT_STATUS, max_length=10 )
+    visibilite  = models.CharField(max_length=100, choices=settings.VISIBILITE_CHOICES, default=settings.VISIBILITE_DEFAULT, verbose_name=_('visiblite'))
+    created     = models.DateTimeField(auto_now_add=True, verbose_name=_('created on'))
+    due_date    = models.DateTimeField(verbose_name=_("date d\'echeance"))
+    closed      = models.DateTimeField(null=True, blank=True, verbose_name=_('closed on'))
+    start_date  = models.DateTimeField(verbose_name=_('date debut'),  ) # timezone.now()
+    end_date    = models.DateTimeField(verbose_name=_('date fin'), null=True, blank=True)
+    comment     = models.TextField(null=True, blank=True)
+    default_image = ResizedImageField( upload_to='upload/product_images/%Y/%m/', blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['slug']
+        verbose_name = _('project')
+        verbose_name_plural = _('projects')
+
+    def __str__(self):
+        return "%s" % self.title
+
+    def save(self):
+        if self.status in settings.PROJECT_CLOSE_STATUSES :
+            if self.closed is None:
+                self.closed = timezone.now()
+            self.closed = None
+
+        # super save
+        super(BaseProject, self).save()
+
+    @property
+    def closed(self):
+        if self.end_date :
+            return True
+        
+    def working_hours(self):
+        count = 0
+        for ticket in self.tickets.all():
+            count += ticket.working_hours()
+        return count
+    
+       #@models.permalink
+    def get_absolute_url(self):
+        return ('project_detail', (), {"pk": self.pk})
+
+    #@models.permalink
+    def get_absolute_url(self):
+        return ('project_detail', (), {"pk": self.pk})
+
+    #@models.permalink
+    def get_edit_url(self):
+        return ('project_edit', (), {"pk": self.pk})
+
+    #@models.permalink
+    def get_delete_url(self):
+        return ('project_delete', (), {"pk": self.pk})
+
+    def add_tags(self, tag_label):
+        """
+        b = Bookmark(url='https://www.djangoproject.com/')
+        >>> b.save()
+        >>> t1 = TaggedItem(content_object=b, tag='django')
+        >>> t1.save()
+        # les tags de object Bookmark
+        tags = GenericRelation(TaggedItem, related_query_name='bookmark')
+        # types de recherches manuellement :
+        >>> bookmarks = Bookmark.objects.filter(url__contains='django')
+        >>> bookmark_type = ContentType.objects.get_for_model(Bookmark)
+        >>> TaggedItem.objects.filter(content_type__pk=bookmark_type.id, object_id__in=bookmarks)
+        """
+        t1 = TaggedItem(content_object=self, object_id=self.pk, tag=tag_label)
+        t1.save()
+
+    def get_tag_project(self):
+        return TaggedItem.objects.filter(content_type__pk=self.id)
+
+   
+    # les tags de object Bookmark
+    def get_all_tags_project(self):
+        return ContentType.objects.get_for_model(Project)
+
+    # add  partenaire du project
+    def add_partenaire_client(self, partenaire_id, partenaire_name, partenaire_type='C'):
+        """
+        pp1 = models.Project.objects.get(pk=25)
+        cli1 = of_models.DjangoClient.objects.get(codeclie=222)
+        cli2 = of_models.DjangoClient.objects.get(codeclie=223)
+        t1 = models.Partenaire(content_object=pp1, tiers=cli1.codeclie)
+        t2 = models.Partenaire(content_object=pp1, tiers=cli2.codeclie)
+        t1.save() ; t2.save()
+        models.Partenaire.objects.filter(content_type=pp1)
+        """
+
+        t1 = Partenaire(content_object=self,
+                        tiers_id=partenaire_id,
+                        tiers_name=partenaire_name,
+                        tiers_type=partenaire_type)
+        t1.save()
+
+    # get partenaire du project
+    def get_partenaires_project(self):
+        return Partenaire.objects.filter(object_id=self.pk)
+            ## Upload files
+
+    # add document du project
+    def add_document(self, document):
+        """
+        """
+        doc= GDocument(content_object=self, document = document)
+        doc.save()
+
+    # get pieces jointes au project
+    def get_documents_project(self):
+        return self.documents.all()
+    # get pieces jointes au project
+ 
+

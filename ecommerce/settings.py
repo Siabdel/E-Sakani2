@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from pathlib import Path
+# import des variables projects
+from ecommerce.projects import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,10 +41,12 @@ INSTALLED_APPS = [
     'mptt',
     'core.product', # Product
     'core.taxonomy', # new
+    'core.profile',  # new
     'core.orders', # Orders
     'core.shop', # Shop
-    'cart.apps.CartConfig', # Cart
+    'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
+    'project', # new
     'polymorphic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # local app
+    'mapwidgets', ## new google map
     'immoshop.apps.ImmoShopConfig', # Cart
     
 ]
@@ -78,7 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart', ## new
+                'core.cart.context_processors.cart', ## new
             ],
         },
     },
@@ -121,15 +126,32 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# In a Windows environment this must be set to your system time zone.
+TIME_ZONE = 'Europe/Paris'
+
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'Fr-fr'
+
+DEFAULT_CHARSET='UTF-8'
 
 TIME_ZONE = 'UTC'
-
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
 USE_I18N = True
 
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale.
 USE_L10N = True
 
-USE_TZ = True
+# If you set this to False, Django will not use timezone-aware datetimes.
+# Lorsque USE_TZ vaut True et que la base de données ne gère pas les fuseaux horaires (par ex. SQLite, MySQL, Oracle), Django lit et écrit les dates/heures en heure locale en fonction de cette option quand elle est définie et en UTC si elle ne l’est pas.
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -164,3 +186,37 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+## 
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20 # 2621440 (c-à-d. 2.5 Mio).
+
+# Securite API corsheaders
+
+CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://localhost:8080',
+] # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
+CORS_ORIGIN_REGEX_WHITELIST = [
+    'http://localhost:3000',
+    'http://localhost:8080',
+]
+
+## BLOG MDEDITOR ##
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Map settings
+GOOGLE_MAP_API_KEY = "<key>"
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", "amsterdam"),
+        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'nl'}}),
+        ("markerFitZoom", 12),
+    ),
+    "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY
+}

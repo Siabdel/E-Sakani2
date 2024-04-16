@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <h2> list projects  </h2> 
+    <div class="row pt-lg-5">
+        {% for project in projects %}
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100">
+                    <a href="{% url 'immoshop:product_immo_detail' project.id %}">
+                        {% if project.default_image %}
+                        <img class="card-img-top" src="{{ project.default_image.url }}"
+                            alt={{ project.default_image.url }}"
+                            class="rounded-lg img-fluid mx-auto d-block" 
+                            style="height:200; widht:200">
+                            
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-4">
+                <div class="card h-100">
+                    
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <a href="{% url 'immoshop:product_immo_detail' project.pk %}">
+                                {{ project.title | slice:"0:30" }}
+                            </a>
+                        </h4>
+                        <h5> <p class="text-left">Prix a partir : {{ project.price }} Euro</p> </h5>
+                        <p class="card-text">Description : {{ project.description | slice:"0:250" }} </p>
+                        {% for spec in project.options %}  
+                            <p class="card-text">{{ spec.name }}  : {{ spec.value }} </p>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-xs-12 col-md-6">
+                            <a href="{% url 'project:project_detail' project.id %}" class="btn btn-warning btn-lg"> Voir Details au panier </a> 
+                        </div>
+                        <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+</div>
+</div>
+</h2>
+    
+
+{% endblock %} 

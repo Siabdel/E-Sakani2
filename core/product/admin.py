@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.contrib import admin
 from  mptt.admin  import MPTTModelAdmin
 # Register your models here.
@@ -23,3 +24,4 @@ class ProductSpecificationValue(admin.ModelAdmin):
 class ProductCategoyAdmin(MPTTModelAdmin):
     list_display = ["name", "name",]
     prepopulated_fields = {'slug': ('name',), }
+

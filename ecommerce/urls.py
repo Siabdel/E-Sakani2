@@ -22,7 +22,8 @@ urlpatterns = [
     path('', include('immoshop.urls'), name='home'),
     path('sh', include('core.shop.urls'), name='sh_home'),
     path('admin/', admin.site.urls),
-    path('cart/', include('cart.urls')),
+    path('project/', include('project.urls')),
+    path('cart/', include('core.cart.urls')),
     path('orders/', include('core.orders.urls')),
     path('mfu/', include("core.mfilesupload.urls")),
 ] 

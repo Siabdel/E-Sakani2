@@ -21,7 +21,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 from core.orders.models import OrderItem
 from core.orders.forms import OrderCreateForm
-from cart.cart import Cart
+from core.cart.cart import Cart
 
 
 def order_create_session(request):

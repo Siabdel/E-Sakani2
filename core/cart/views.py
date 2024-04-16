@@ -10,8 +10,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
-from .cart import Cart
-from cart.forms import CartAddProductForm
+from core.cart.cart import Cart
+from core.cart.forms import CartAddProductForm
 from core.utils import get_product_model
 from core.shop import models as sh_models
 from immoshop import models as pro_models

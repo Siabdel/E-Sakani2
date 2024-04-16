@@ -28,6 +28,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.conf import settings
+from mptt.models import MPTTModel, TreeForeignKey
 
 class Category(models.Model):
     name = models.CharField(max_length=150, db_index=True)
@@ -44,6 +45,27 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('immoshop:product_list_by_category', args=[self.slug])
+
+class MPCategory(MPTTModel):
+    """ Category table implement MPTT"""
+    name = models.CharField(_('Category Name'), help_text=_('Requird and uniq'), 
+                              max_length=150, db_index=True)
+    slug = models.SlugField(max_length=150, unique=True ,db_index=True)
+    is_active = models.BooleanField(_("Is active"), default=True)
+    parent = TreeForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+
+    class MPTTModel:
+        ordering = ('name', )
+        ordering_insertion_by = ('name', )
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
+    
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('immoshop:product_list_by_category', args=[self.slug])
+
 
 
 class Document(models.Model):
