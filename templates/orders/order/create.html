@@ -1,5 +1,8 @@
 {% extends 'immoshop/base.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
+
+
 {% block title %}
     Your Shopping Cart| Checkout
 {% endblock %}
@@ -10,8 +13,10 @@
             <div class="col-md-8">
                 <h4 class="page-header">Checkout</h4>
                 <form action="." method="post">
+                    
                     {% csrf_token %}
-                    {{ form.as_p }}<br>
+                    {{ form|crispy }}<br>
+
                     <input type="submit" class="btn btn-primary" value="Submit order">
                 </form>
             </div>

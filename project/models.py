@@ -31,8 +31,6 @@ class Partenaire(models.Model):
     def __str__(self):
         return "tiers=%s id=%s" % (self.tiers_type , self.tiers_id)
 
-
-
 class Project(base_models.BaseProject):
     societe = models.ForeignKey(Societe, on_delete=models.CASCADE)
     category = models.ForeignKey(MPCategory, related_name='projetcs', null=True, blank=True, on_delete=models.CASCADE)
@@ -41,11 +39,6 @@ class Project(base_models.BaseProject):
     lon = models.FloatField(null=True, blank=True) # longitude
     lat = models.FloatField(null=True, blank=True) # latitude
     #location = gmodels.PointField(null=True, blank=True)
-
-   
-
-
-
 
 class ProjectImage(base_models.BaseProductImage):
     project = models.ForeignKey(Project, related_name="images", on_delete=models.CASCADE)

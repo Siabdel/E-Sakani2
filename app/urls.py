@@ -19,13 +19,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', include('immoshop.urls'), name='home'),
-    path('sh', include('core.shop.urls'), name='sh_home'),
+    path('', include('project.urls'), name='home'),
+    path('shop/', include('immoshop.urls'), name='shop_home'),
+    path('sh/', include('core.shop.urls'), name='sh_home'),
     path('admin/', admin.site.urls),
-    path('project/', include('project.urls')),
     path('cart/', include('core.cart.urls')),
     path('orders/', include('core.orders.urls')),
     path('mfu/', include("core.mfilesupload.urls")),
+     # invoices
+    path("invoice", include("invoices.urls")),
+    path("custom", include("core.custom_accounts.urls")),
 ] 
 # ... the rest of your URLconf goes here ...
 ## add static 
