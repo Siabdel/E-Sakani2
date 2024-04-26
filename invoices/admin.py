@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from core.custom_accounts.forms import CustomUserChangeForm, CustomUserCreationForm
-from core.custom_accounts.models import CustomUser
+from customs.forms import CustomUserChangeForm, CustomUserCreationForm
+from customs.models import CustomUser
 
-from .models import Client, Invoice, InvoiceItem
+from .models import Invoice, InvoiceItem
 
 
 class CustomUserAdmin(UserAdmin):
@@ -26,5 +26,4 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(Client)
 admin.site.register(InvoiceItem)

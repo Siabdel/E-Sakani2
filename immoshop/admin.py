@@ -115,10 +115,6 @@ class ImmoProductAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
             product_image.save()
 
 
-@admin.register(sh_models.ItemArticle)
-class ItemArticleAdmin(admin.ModelAdmin):
-    list_display =  [field.name for field in sh_models.ItemArticle._meta.get_fields()]
-
 #@admin.register(immo_models.ImmoProductImage)
 class ProductImage(admin.ModelAdmin):
     pass

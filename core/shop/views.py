@@ -127,6 +127,36 @@ class ProductDetailView(DetailView): # new
       
         return context
 
+def order_create(request):
+    cart = Cart(request) 
+    cart_id = request.session[settings.CART_SESSION_ID]
+    #raise Exception(f" cart={cart}, card_id={cart_id}")
+    
+    shop_cart = msh_models.ShopCart.objects.get(id=cart_id)
+    items = shop_cart.item_articles.all()
+    
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save()
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    price=item.product.price,
+                    quantity=item.quantity
+                )
+            # vider le panier 
+            cart.clear()
+        return render(request, 'orders/order/created.html', {'order': order})
+    else:
+        form = OrderCreateForm()
+        context = {
+                    'items':items,
+                    'form': form
+                   }
+    return render(request, 'orders/order/create.html', context )
+
         
 @login_required
 def generate_pdf_invoice(request, invoice_id):

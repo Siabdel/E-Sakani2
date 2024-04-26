@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import Client, Invoice, InvoiceItem
+from .models import Custom, Invoice, InvoiceItem
 
 
 class InvoiceItemsForm(ModelForm):
@@ -18,7 +18,7 @@ class InvoiceCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")
         super(InvoiceCreateForm, self).__init__(*args, **kwargs)
-        self.fields["client"].queryset = Client.objects.filter(created_by=user)
+        self.fields["client"].queryset = Custom.objects.filter(created_by=user)
 
 
 class InvoiceEditForm(ModelForm):
@@ -234,5 +234,5 @@ class ClientCreateForm(ModelForm):
     country = forms.ChoiceField(choices=COUNTRIES, required=True)
 
     class Meta:
-        model = Client
+        model = Custom
         exclude = ["created_by"]

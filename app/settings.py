@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'core.shop', # Shop
     'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
-    'core.custom_accounts',
     #'core.custom_accounts.apps.AccountsConfig',
     'project', # new
     'polymorphic',
@@ -71,6 +70,7 @@ INSTALLED_APPS = [
     'mapwidgets', ## new google map
     'immoshop.apps.ImmoShopConfig', # Cart
     "invoices",
+    'customs', # custom
     
 ]
 

@@ -6,12 +6,33 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
 from core.utils import get_product_model, Dict2Obj
 from core.cart.forms import CartAddProductForm
+from core.taxonomy import models as tax_models
+from django.views.generic import (
+    View,
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
+from django.views import View
+
+from weasyprint import HTML
+from django.contrib import messages
+from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
+from core.orders.models import OrderItem
 from core.product import models as pro_models
 from core.shop import models as sh_models 
-from core.taxonomy import models as tax_models
+from immoshop import models as immo_models
+from invoices import models as devis_models
+from customs.forms import CustomUserCreationForm
+from core.cart.cart import Cart
+from django.urls import reverse, resolve
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 # product Model setting
 product_model = get_product_model()
@@ -92,7 +113,7 @@ def product_immo_detail(request, product_id, slug):
     return render(request, "immoshop/product_detail.html", context={})
 
 class ProductDetailView(DetailView): # new
-    model = pro_models.ImmoProduct
+    model = immo_models.ImmoProduct
     template_name = "immoshop/product_detail.html"
     context_object_name = "product"
     
@@ -125,3 +146,135 @@ class ProductDetailView(DetailView): # new
         }
       
         return context
+    
+class InvoiceCreate(View):
+    template_name = "immoshop/create.html"
+    form_class = CustomUserCreationForm
+    initial = {"key": "value"}
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context =  super().get_context_data(**kwargs)
+        # formulaire 
+        custom_form = self.form_class()
+        context = context.upoadet({
+            'form': custom_form
+        })
+      
+        return context
+        
+    def get(self, request):
+        #
+        form = self.form_class(initial={"user": request.user})
+        
+        return render(request, self.template_name, {"form": form})
+    
+    def post(self, request, *args, **kwargs):
+        # cart 
+        cart = Cart(request) 
+        cart_id = request.session[settings.CART_SESSION_ID]
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # <process form cleaned data>
+            shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
+            items = shop_cart.item_articles.all()
+            # 1- create client 
+            customer  = form.save()
+            # 2- create invoice + ItemInvoice
+            devis = devis_models.Invoice(title="Mon devis test", 
+                                         client = customer, 
+                                         invoice_total = 100,
+                                         )
+            for item in items:
+                devis_models.InvoiceItem.objects.create(
+                    invoice = devis,
+                    item = item, 
+                    quantity=item.quantity,
+                    rate = 12,
+                    tax = 15.5, 
+                    price=item.product.price,
+                )
+            # vider le panier 
+            cart.clear()
+            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
+            #response =  redirect('invoice:invoice-detail')
+            return redirect('invoice_detail', pk=devis.pk)
+
+        return render(request, self.template_name, {"form": form})
+    
+    
+    
+
+def invoice_create(request):
+    """ 
+    1- create client user
+    2- create invoice + ItemInvoice
+    3- Valider la commande ou la reservation
+    """
+    cart = Cart(request) 
+    cart_id = request.session[settings.CART_SESSION_ID]
+    #raise Exception(f" cart={cart}, card_id={cart_id}")
+    context = {} 
+    shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
+    items = shop_cart.item_articles.all()
+    
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            # 1- create client 
+            customer  = form.save()
+            # 2- create invoice + ItemInvoice
+            devis = devis_models.Invoice(title="Mon devis test", 
+                                         client = customer, 
+                                         invoice_total = 100,
+                                         )
+            for item in items:
+                devis_models.InvoiceItem.objects.create(
+                    invoice = devis,
+                    item = item, 
+                    quantity=item.quantity,
+                    rate = 12,
+                    tax = 15.5, 
+                    price=item.product.price,
+                )
+            # vider le panier 
+            cart.clear()
+            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
+            #response =  redirect('invoice:invoice-detail')
+            return redirect('invoice_detail', pk=devis.pk)
+    else:
+        form = CustomUserCreationForm()
+        context = { 'items':items, 'form': form }
+
+    return render(request, 'orders/order/create.html', context )
+
+        
+@login_required
+def generate_pdf_invoice(request, invoice_id):
+    """Generate PDF Invoice"""
+
+    queryset = Invoice.objects.filter(user=request.user)
+    invoice = get_object_or_404(queryset, pk=invoice_id)
+
+    client = invoice.client
+    user = invoice.user
+    invoice_items = InvoiceItem.objects.filter(invoice=invoice)
+
+    context = {
+        "invoice": invoice,
+        "client": client,
+        "user": user,
+        "invoice_items": invoice_items,
+        "host": request.get_host(),
+    }
+    print(request.get_host())
+
+    html_template = render_to_string("pdf/html-invoice.html", context)
+
+    pdf_file = HTML(
+        string=html_template, base_url=request.build_absolute_uri()
+    ).write_pdf()
+    pdf_filename = f"invoice_{invoice.id}.pdf"
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response["Content-Disposition"] = "filename=%s" % (pdf_filename)
+    return response

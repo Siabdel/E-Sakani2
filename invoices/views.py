@@ -16,7 +16,7 @@ from django.views.generic import (
 from weasyprint import HTML
 
 from .forms import InvoiceCreateForm, InvoiceEditForm, ClientCreateForm
-from .models import Client, Invoice, InvoiceItem
+from .models import Custom, Invoice, InvoiceItem
 
 InvoiceItemsFormset = inlineformset_factory(
     Invoice,
@@ -170,7 +170,7 @@ class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
-    model = Client
+    model = Custom
     template_name = "new_client.html"
     form_class = ClientCreateForm
 
@@ -186,9 +186,9 @@ class ClientListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Client.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(created_by=self.request.user)
         else:
-            return Client.objects.none()
+            return Custom.objects.none()
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
@@ -200,9 +200,9 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Client.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(created_by=self.request.user)
         else:
-            return Client.objects.none()
+            return Custom.objects.none()
 
     def get_invoices_set(self):
         if self.request.user.is_authenticated:
@@ -232,9 +232,9 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Client.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(created_by=self.request.user)
         else:
-            return Client.objects.none()
+            return Custom.objects.none()
 
 
 class ClientDeleteView(LoginRequiredMixin, DeleteView):
@@ -243,9 +243,9 @@ class ClientDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Client.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(created_by=self.request.user)
         else:
-            return Client.objects.none()
+            return Custom.objects.none()
 
 
 @login_required
