@@ -25,12 +25,14 @@ class ProjectDetailView(DetailView):
         context =  super().get_context_data(**kwargs)
 
         project = self.get_object()
+        produits_immo = project.immoproduct_set.all()
         project_images = project.images.all()
         ## raise(Exception(project_images))
     
         context.update ( 
             {
             'project_images' : project_images,
+            'produits_immo' : produits_immo,
             'image' : project_images.first(),
             })
       

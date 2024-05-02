@@ -1,0 +1,21 @@
+{% extends "base.html" %} 
+{% load static i18n %}
+
+{% block content %}
+
+    <h1>Create Account</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ account_form.as_p }}
+
+        <h2>Custom Information</h2>
+        {{ custom_formset.management_form }}
+        {% for form in custom_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+
+        <button type="submit">Create Account</button>
+    </form>
+
+{% endblock %}
+ 

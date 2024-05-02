@@ -1,4 +1,4 @@
-{% load static %}
+{% load static  i18n %}
 <html>
 <head>
     <title>{% block title %}Invoicing App{% endblock %}</title>
@@ -27,7 +27,7 @@
 <body>
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <a class="navbar-brand" href="{% url 'home' %}">Invoicing App</a>
+          <a class="navbar-brand" href="{% url 'invoices:home' %}">Invoicing App</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon">Something</span>
           </button>
@@ -35,11 +35,11 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
               <li id="clients-dropdown" class="nav-item dropdown active">
-                <a class="nav-link dropdown-toggle" href="{% url 'client-list' %}" id="navbarClientDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clients <span class="sr-only">(current)</span></a>
+                <a class="nav-link dropdown-toggle" href="{% url 'invoices:client-list' %}" id="navbarClientDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Clients <span class="sr-only">(current)</span></a>
                   <div class="dropdown-menu" aria-labelledby="navbarClientDropdown">
-                      <a class="dropdown-item" href="{% url 'new-client' %}">Create New Client</a>
+                      <a class="dropdown-item" href="{% url 'invoices:new-client' %}">Create New Client</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="{% url 'client-list' %}">Client List</a>
+                      <a class="dropdown-item" href="{% url 'invoices:client-list' %}">Client List</a>
                   </div>
               </li>
 
@@ -48,10 +48,10 @@
                   Invoices
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="{% url 'new-invoice' %}">Create Invoice</a>
+                  <a class="dropdown-item" href="{% url 'invoices:new-invoice' %}">Create Invoice</a>
 
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'invoice-list' %}">Invoice List</a>
+                  <a class="dropdown-item" href="{% url 'invoices:invoice-list' %}">Invoice List</a>
                 </div>
               </li>
 
@@ -62,7 +62,6 @@
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="userMenu">
-                 <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
                 </div>
             </li>
 
@@ -76,9 +75,15 @@
             </form>
               {% endif %}
         </nav>
-
-
-
+        <!-- Message erreur -->
+        {% if messages %}
+            <ul id="messages">
+                {% for message in messages %}
+                <li id="message_{{ forloop.counter }}">
+                <a href="#" onclick="$('#message_{{ forloop.counter }}').fadeOut(); return false;"><small>{% trans "clear" %}</small></a> {{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
         <div class="content">
             {% block content %}

@@ -2,24 +2,50 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .forms import CustomUserChangeForm, CustomCreatForm
 from .models import CustomUser
 from customs import models as acc_models
 
 # admin.site.register(User, UserAdmin)
 
 # Register your models here.
-@admin.register(acc_models.CustomUser)
+@admin.register(acc_models.Custom)
 class AccountsAdmin(admin.ModelAdmin):
     list_display  = [f.name for f in acc_models.CustomUser._meta.get_fields()]
-    list_display = ["username", "first_name", "last_name", 
-                    "email", "is_staff", "is_superuser",  ]
+    list_display =  ('email', 'first_name', 'last_name', 'company',
+                  'address1', 'address2', 'country', 'phone_number',  )
+    fieldsets = (
+        (
+            "Personal Info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "phone_number",
+                )
+            },
+        ),
+        (
+            "Company Info",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "company",
+                    "company_logo",
+                    "address1",
+                    "address2",
+                    "country",
+                ),
+            },
+        ),
+    )
 
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
+    add_form = CustomCreatForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ["first_name", "last_name", "username", "email", "country", ]
+    list_display = ["first_name", "last_name", "email", "country", ]
 
     fieldsets = (
         (
@@ -28,7 +54,7 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
-                    "username",
+                    "email",
                     "password",
                     "phone_number",
                 )

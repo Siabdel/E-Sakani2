@@ -46,5 +46,15 @@
             <h2> <a href="#"> Appartements product </a>  </h2>
         </div>
     </div>
+    <!-- les produits du projet -->
+    <div class="row">
+        {% for product in produits_immo %}
+            <ul class="list-group">
+                <li class="list-group-item"> 
+                    <a href="{% url 'immoshop:product_immo_detail' product.pk  %}"> {{ product }} </a> 
+                </li>
+            </ul>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

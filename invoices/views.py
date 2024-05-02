@@ -2,10 +2,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import FileSystemStorage
 from django.forms.models import inlineformset_factory
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.http import (
+    HttpRequest, HttpResponse,
+    HttpResponse, HttpResponseRedirect
+)
+from django.shortcuts import render, redirect
+
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -17,6 +22,7 @@ from weasyprint import HTML
 
 from .forms import InvoiceCreateForm, InvoiceEditForm, ClientCreateForm
 from .models import Custom, Invoice, InvoiceItem
+from django.contrib import messages
 
 InvoiceItemsFormset = inlineformset_factory(
     Invoice,
@@ -173,12 +179,22 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Custom
     template_name = "new_client.html"
     form_class = ClientCreateForm
-
+    
+     
+        
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        return response
+    
     def form_valid(self, form):
+        # set user connecte
+        form.instance.user = self.request.user
         client = form.save(commit=False)
-        client.created_by = self.request.user
+        # user correspondant a ce client
+        client.user = self.request.user
         client.save()
-        return super().form_valid(form)
+        ## return super().form_valid(form)
+        return redirect(reverse("client-detail", kwargs={'pk' : client.pk}) )
 
 
 class ClientListView(LoginRequiredMixin, ListView):
@@ -200,7 +216,7 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(user=self.request.user)
         else:
             return Custom.objects.none()
 
@@ -219,6 +235,9 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "edit_client.html"
+    context_object_name = 'client'
+    model = Custom
+
     fields = [
         "first_name",
         "last_name",
@@ -232,10 +251,14 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(created_by=self.request.user)
+            return Custom.objects.filter(user=self.request.user)
         else:
             return Custom.objects.none()
+    def post(self, request,  *args, **kwargs):
+        form = self.form_class()
+        return render(request, context={'form':form})
 
+        
 
 class ClientDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "confirm_delete_client.html"

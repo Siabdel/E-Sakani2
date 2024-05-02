@@ -1,14 +1,14 @@
 
-# immoshop/views.py
+# Dajango Contrib
 from typing import Any
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from django.contrib.auth.models import AnonymousUser
+from django.conf import settings
 from django.utils.decorators import method_decorator
-from core.utils import get_product_model, Dict2Obj
-from core.cart.forms import CartAddProductForm
-from core.taxonomy import models as tax_models
+## Generic View
 from django.views.generic import (
     View,
     CreateView,
@@ -18,21 +18,22 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views import View
-
+## local app modules
 from weasyprint import HTML
-from django.contrib import messages
-from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
 from core.orders.models import OrderItem
 from core.product import models as pro_models
 from core.shop import models as sh_models 
 from immoshop import models as immo_models
 from invoices import models as devis_models
-from customs.forms import CustomUserCreationForm
 from core.cart.cart import Cart
 from django.urls import reverse, resolve
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.contrib.auth.models import User
+from customs.forms import CustomCreatForm, AccountUserCreationForm
+from core.utils import get_product_model, Dict2Obj
+from core.cart.forms import CartAddProductForm
+from core.taxonomy import models as tax_models
+
 
 # product Model setting
 product_model = get_product_model()
@@ -147,10 +148,44 @@ class ProductDetailView(DetailView): # new
       
         return context
     
+class AccompteUserCreate(View):
+    template_name = "immoshop/create.html"
+    form_class = AccountUserCreationForm
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context =  super().get_context_data(**kwargs)
+        # formulaire 
+        account_form = self.form_class()
+        context = context.upoadet({
+            'form': account_form
+        })
+        return context
+        
+    def get(self, request):
+        #
+        form = self.form_class(initial={"user": request.user})
+        return render(request, self.template_name, {"form": form})
+    
+    def post(self, request, *args, **kwargs):
+        # cart 
+        cart = Cart(request) 
+        cart_id = request.session[settings.CART_SESSION_ID]
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.instance
+            form.save()
+            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
+            #response =  redirect('invoice:invoice-detail')
+            return redirect('immoshop:invoice_create', user_id=user.pk)
+
+        return render(request, self.template_name, {"form": form})
+    
+    
+    
 class InvoiceCreate(View):
     template_name = "immoshop/create.html"
-    form_class = CustomUserCreationForm
-    initial = {"key": "value"}
+    form_class = CustomCreatForm
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context =  super().get_context_data(**kwargs)
@@ -162,10 +197,11 @@ class InvoiceCreate(View):
       
         return context
         
-    def get(self, request):
+    def get(self, request, user_id):
         #
-        form = self.form_class(initial={"user": request.user})
-        
+        user = User.objects.get(pk=user_id)
+        form = self.form_class(initial={"user": user})
+        ## 
         return render(request, self.template_name, {"form": form})
     
     def post(self, request, *args, **kwargs):
@@ -179,7 +215,9 @@ class InvoiceCreate(View):
             shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
             items = shop_cart.item_articles.all()
             # 1- create client 
+            form.instance.user = request.user
             customer  = form.save()
+            
             # 2- create invoice + ItemInvoice
             devis = devis_models.Invoice(title="Mon devis test", 
                                          client = customer, 
@@ -196,15 +234,17 @@ class InvoiceCreate(View):
                 )
             # vider le panier 
             cart.clear()
+            
             ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
             #response =  redirect('invoice:invoice-detail')
             return redirect('invoice_detail', pk=devis.pk)
-
-        return render(request, self.template_name, {"form": form})
+        else :
+            user = form.instance.user
+            #return redirect('invoice_create', user_id=user.pk)
+            return render(request, self.template_name, {"form": form})
     
     
     
-
 def invoice_create(request):
     """ 
     1- create client user
@@ -219,7 +259,7 @@ def invoice_create(request):
     items = shop_cart.item_articles.all()
     
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomCreatForm(request.POST)
         if form.is_valid():
             # 1- create client 
             customer  = form.save()
@@ -243,7 +283,7 @@ def invoice_create(request):
             #response =  redirect('invoice:invoice-detail')
             return redirect('invoice_detail', pk=devis.pk)
     else:
-        form = CustomUserCreationForm()
+        form = CustomCreatForm()
         context = { 'items':items, 'form': form }
 
     return render(request, 'orders/order/create.html', context )
@@ -274,7 +314,89 @@ def generate_pdf_invoice(request, invoice_id):
     pdf_file = HTML(
         string=html_template, base_url=request.build_absolute_uri()
     ).write_pdf()
+    
     pdf_filename = f"invoice_{invoice.id}.pdf"
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = "filename=%s" % (pdf_filename)
     return response
+
+
+class AccompteUserCreate(View):
+    form_class = AccountUserCreationForm
+    template_name = "immoshop/create.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context =  super().get_context_data(**kwargs)
+        # formulaire 
+        account_form = self.form_class()
+        context = context.upoadet({
+            'form': account_form
+        })
+        return context
+        
+    def get(self, request):
+        #
+        form = self.form_class(initial={"user": request.user})
+        return render(request, self.template_name, {"form": form})
+    
+    def post(self, request, *args, **kwargs):
+        # cart 
+        cart = Cart(request) 
+        cart_id = request.session[settings.CART_SESSION_ID]
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.instance
+            form.save()
+            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
+            #response =  redirect('invoice:invoice-detail')
+            return redirect('immoshop:invoice_create', user_id=user.pk)
+
+        return render(request, self.template_name, {"form": form})
+    
+    
+
+from immoshop.forms import CustomFormSet
+from customs.forms import CustomCreatForm, AccountUserCreationForm
+class CreateAccount(View) :
+    template_name = "immoshop/create_account_vuejs.html"
+    form_class = AccountUserCreationForm
+    currentPage = 1
+
+    def get(self, request):
+        account_form = AccountUserCreationForm()
+        custom_formset = CustomFormSet()
+        context = {
+            'account_form': account_form, 
+            'custom_formset': custom_formset,
+            'currentPage' : self.currentPage ,
+            }
+        
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        account_form = AccountUserCreationForm(request.POST)
+        custom_formset = CustomFormSet(request.POST)
+
+        if account_form.is_valid() and custom_formset.is_valid():
+            custom_formset.instance = account_form.save()
+            custom_formset.save()
+            return redirect('success_url')
+
+        elif not custom_formset.is_valid(): 
+            self.currentPage = 2
+        else : 
+            self.currentPage = 1
+  
+        context = {
+            'account_form': account_form, 
+            'custom_formset': custom_formset,
+            'currentPage' : self.currentPage,
+        }
+        return render(request, self.template_name, context=context)
+
+   
+
+def success(request):
+    return render(request, 'success.html')
+

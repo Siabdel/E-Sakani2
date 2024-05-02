@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
         swappable = "AUTH_USER_MODEL"
 
     def __str__(self):
-        return f"{self.username}"
+        return f"{self.first_name} {self.last_name}"
 # Client
 class Custom(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE,)
@@ -35,14 +35,14 @@ class Custom(models.Model):
     company_logo = models.ImageField(blank=True)
     phone_number = PhoneNumberField(blank=True)
     
-    class Meta(AbstractUser.Meta):
+    class Meta:
         ordering = ('first_name', 'last_name', )
         verbose_name: "Customer"
         verbose_name_plural: "Customers"  # client 
 
 
     def __str__(self):
-        return f"{self.username}"
+        return f"{self.first_name} {self.last_name}"
     
     def get_absolute_url(self):
         return reverse("client-detail", kwargs={"pk": self.pk})

@@ -1,0 +1,60 @@
+{% extends "immoshop/base_shop.html" %}
+{% load static i18n %}
+{% load crispy_forms_tags %}
+
+{% block content  %}
+
+<div id="app">
+    <h1>[[ msg ]]</h1>
+    <form method="post" @submit.prevent="submitForm">
+        {% csrf_token %}
+        <div v-if="currentStep === 1">
+            <h2>Step 1: Account Information</h2>
+            {{ account_form|crispy }}
+        </div>
+        <div v-if="currentStep === 2">
+            <h2>Step 2: Custom Information</h2>
+            {{ custom_formset.management_form }}
+            {% for form in custom_formset.forms %}
+                <div> {{ form|crispy }} </div>
+            {% endfor %}
+        </div>
+        <button class="btn btn-warning btn-block" v-if="currentStep > 1" @click.prevent="prevStep">Previous</button>
+        <button class="btn btn-warning btn-block" v-if="currentStep < totalSteps" @click.prevent="nextStep">Next</button>
+        <button class="btn btn-warning btn-block" v-else type="submit">Create Account</button>
+    </form>
+</div>
+
+{% endblock  %}
+
+{% block  extra_js %}
+<script>
+    new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            msg : "Create Account vue.js",
+            currentStep: {{ currentPage }},
+            totalSteps: 2,
+        },
+        
+
+        methods: {
+            nextStep() {
+                this.currentStep++;
+                $('form').submit();
+                console.log("nextStep =", $('form'))
+            },
+            prevStep() {
+                this.currentStep--;
+            },
+            submitForm() {
+                //Votre logique pour soumettre le formulaire
+                $('form').submit();
+                console.log("submit form = ", self.currentStep)
+            }
+        }
+    });
+</script>
+
+{% endblock  %}

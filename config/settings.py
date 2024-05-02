@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 from pathlib import Path
 # import des variables projects
-from app.projects import *
+from config.projects import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +61,11 @@ INSTALLED_APPS = [
     'rest_framework', # new
     # debug tools
     'debug_toolbar', # new
+    'corsheaders', 
+    # User Authentication
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     # Third party
     "crispy_forms",
     "crispy_bootstrap4",
@@ -83,11 +88,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
     # debug 
     'debug_toolbar.middleware.DebugToolbarMiddleware', # new
 ]
 
-ROOT_URLCONF = 'app.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -106,7 +113,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'app.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 
@@ -259,3 +266,6 @@ CORS_ORIGIN_REGEX_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:8080',
 ]
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_URL = "/accounts/login/"

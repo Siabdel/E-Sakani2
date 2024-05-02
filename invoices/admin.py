@@ -1,14 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from customs.forms import CustomUserChangeForm, CustomUserCreationForm
+from customs.forms import CustomUserChangeForm, CustomCreatForm
 from customs.models import CustomUser
 
 from .models import Invoice, InvoiceItem
 
 
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
+    add_form = CustomCreatForm
     form = CustomUserChangeForm
     model = CustomUser
     list_display = ["email", "username"]

@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.auth.models import User
 # from ofschedule.models import DjangoMachine
-from app import settings
+from config import settings
 from core.base_product import models as base_models
 from core.shop import models as sh_models
 from core.product import models as pro_models

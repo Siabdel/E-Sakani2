@@ -54,6 +54,7 @@ class InvoiceItem(models.Model):
 
     item = models.CharField(max_length=200)
     quantity = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     rate = models.DecimalField(max_digits=6, decimal_places=2)
     tax = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 

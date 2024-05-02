@@ -18,7 +18,7 @@ class InvoiceCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")
         super(InvoiceCreateForm, self).__init__(*args, **kwargs)
-        self.fields["client"].queryset = Custom.objects.filter(created_by=user)
+        self.fields["client"].queryset = Custom.objects.filter(user=user)
 
 
 class InvoiceEditForm(ModelForm):
@@ -235,4 +235,4 @@ class ClientCreateForm(ModelForm):
 
     class Meta:
         model = Custom
-        exclude = ["created_by"]
+        exclude = ["user"]

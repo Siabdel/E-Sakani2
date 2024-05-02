@@ -22,6 +22,10 @@ urlpatterns = [
     path('cat/<slug:category_slug>/', shop_models.product_immo_list, name='product_list_by_category'),
     path('show/<int:pk>/', shop_models.ProductDetailView.as_view(), name='product_immo_detail'),
     ## Devis 
-    path('create/', immo_models.InvoiceCreate.as_view(), name='invoice_create'),
-    path( 'invoices/generate/<invoice_id>', immo_models.generate_pdf_invoice, name="generate_pdf",),
+    ## path('add_account/', immo_models.AccountCreate.as_view(), name='account_create'),
+    # path('create_account/', immo_models.AccompteUserCreate.as_view(), name='account_create'),
+    path('create_account/', immo_models.CreateAccount.as_view(), name='account_create'),
+    #
+    path('create_invoice/<int:user_id>', immo_models.InvoiceCreate.as_view(), name='invoice_create'),
+    path('invoices/generate/<int:invoice_id>', immo_models.generate_pdf_invoice, name="generate_pdf",),
 ]
