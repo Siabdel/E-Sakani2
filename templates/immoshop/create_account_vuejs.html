@@ -6,13 +6,13 @@
 
 <div id="app">
     <h1>[[ msg ]]</h1>
-    <form method="post" @submit.prevent="submitForm">
+    <form method="post" >
         {% csrf_token %}
         <div v-if="currentStep === 1">
             <h2>Step 1: Account Information</h2>
             {{ account_form|crispy }}
         </div>
-        <div v-if="currentStep === 2">
+        <div v-if="currentStep != 2">
             <h2>Step 2: Custom Information</h2>
             {{ custom_formset.management_form }}
             {% for form in custom_formset.forms %}
@@ -20,8 +20,9 @@
             {% endfor %}
         </div>
         <button class="btn btn-warning btn-block" v-if="currentStep > 1" @click.prevent="prevStep">Previous</button>
-        <button class="btn btn-warning btn-block" v-if="currentStep < totalSteps" @click.prevent="nextStep">Next</button>
-        <button class="btn btn-warning btn-block" v-else type="submit">Create Account</button>
+        <button class="btn btn-warning btn-block" v-if="currentStep < totalSteps" type="button" @click.prevent="nextStep">Next</button>
+        <button class="btn btn-warning btn-block" @click.prevent="submitForm" 
+                    v-else type="submit">Create Account</button>
     </form>
 </div>
 
@@ -29,32 +30,57 @@
 
 {% block  extra_js %}
 <script>
-    new Vue({
+    vm = new Vue({
         el: '#app',
         delimiters: ['[[', ']]'],
-        data: {
-            msg : "Create Account vue.js",
-            currentStep: {{ currentPage }},
-            totalSteps: 2,
+        data(){
+            return{
+                msg : "Create Account vue.js",
+                currentStep: 1,
+                form1_validate : {{ form1_validate }}, 
+                form2_validate : {{ form2_validate }}, 
+                totalSteps: 2,
+            }
         },
-        
+        //- 
+        computed:{
+            suivant(){
+                console.log("form1_valide = ", this.form1_validate)
+                if(this.form1_validate){
+                    this.currentStep = 2
+                    return true
+                }else {
+                    return false
+                }
+            }
+        },
 
         methods: {
             nextStep() {
-                this.currentStep++;
-                $('form').submit();
-                console.log("nextStep =", $('form'))
+                console.log("currentStep = ", this.currentStep)
+                if (this.currentStep === 1) {
+                    // si valid
+                    this.currentStep++;
+                } 
+                else if(this.currentStep === 2) {
+                    // Valider le formulaire CustomFormSet
+                    $('form').submit();
+                    if( this.form2_validate === 1 ){
+                        $('form').submit();
+                    }
+                }
             },
             prevStep() {
                 this.currentStep--;
             },
             submitForm() {
-                //Votre logique pour soumettre le formulaire
+                // Cette méthode ne sera appelée que si les deux formulaires sont valides
+                console.log("Tous les formulaires sont valides, soumission du formulaire...")
                 $('form').submit();
-                console.log("submit form = ", self.currentStep)
             }
         }
     });
 </script>
 
 {% endblock  %}
+

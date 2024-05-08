@@ -1,6 +1,7 @@
 
 # Dajango Contrib
 from typing import Any
+from django.forms.models import BaseModelForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
@@ -8,6 +9,9 @@ from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 from django.utils.decorators import method_decorator
+from django.db import transaction
+
+
 ## Generic View
 from django.views.generic import (
     View,
@@ -27,12 +31,14 @@ from immoshop import models as immo_models
 from invoices import models as devis_models
 from core.cart.cart import Cart
 from django.urls import reverse, resolve
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from customs.forms import CustomCreatForm, AccountUserCreationForm
 from core.utils import get_product_model, Dict2Obj
 from core.cart.forms import CartAddProductForm
 from core.taxonomy import models as tax_models
+from django.shortcuts import get_object_or_404
+
 
 
 # product Model setting
@@ -148,38 +154,47 @@ class ProductDetailView(DetailView): # new
       
         return context
     
-class AccompteUserCreate(View):
-    template_name = "immoshop/create.html"
+class CustomCreate(CreateView):
+    template_name = "immoshop/create_account.html"
     form_class = AccountUserCreationForm
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context =  super().get_context_data(**kwargs)
-        # formulaire 
-        account_form = self.form_class()
-        context = context.upoadet({
-            'form': account_form
-        })
-        return context
-        
-    def get(self, request):
-        #
-        form = self.form_class(initial={"user": request.user})
-        return render(request, self.template_name, {"form": form})
+    success_url = 'shop/success/' # we will be redirected to
     
+    def get_context_data(self, **kwargs):
+        # author = get_object_or_404(User, pk=user_id)
+        context = super(CustomCreate, self).get_context_data(**kwargs)
+
+        if self.request.POST:
+            context['formset'] = CustomFormSet(self.request.POST, self.request.FILES, instance=self.object)
+        else:
+            context['formset'] = CustomFormSet(instance=self.object)
+        return context
+    
+    def form_valid(self, form, formset):  
+        
+        with transaction.atomic():
+            self.object = form.save()
+
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+        
+        return super().form_valid(form)
+     
     def post(self, request, *args, **kwargs):
-        # cart 
-        cart = Cart(request) 
-        cart_id = request.session[settings.CART_SESSION_ID]
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        formset = CustomFormSet(self.request.POST, self.request.FILES)
 
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.instance
-            form.save()
-            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
-            #response =  redirect('invoice:invoice-detail')
-            return redirect('immoshop:invoice_create', user_id=user.pk)
-
-        return render(request, self.template_name, {"form": form})
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        else:
+            return self.form_invalid(form, formset)
+        
+    def form_invalid(self, form, formset):
+        return self.render_to_response(
+                self.get_context_data(form=form,
+                                    formset=formset))
     
     
     
@@ -321,47 +336,49 @@ def generate_pdf_invoice(request, invoice_id):
     return response
 
 
-class AccompteUserCreate(View):
+class UserCreate(View):
     form_class = AccountUserCreationForm
-    template_name = "immoshop/create.html"
+    template_name = "immoshop/create_account.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context =  super().get_context_data(**kwargs)
-        # formulaire 
-        account_form = self.form_class()
-        context = context.upoadet({
-            'form': account_form
-        })
-        return context
-        
     def get(self, request):
         #
-        form = self.form_class(initial={"user": request.user})
-        return render(request, self.template_name, {"form": form})
+        account_form = self.form_class()
+        context = {
+            'currentPage': 1,
+            'account_form': account_form,
+        }
+        
+        return render(request, self.template_name, context=context)
     
     def post(self, request, *args, **kwargs):
-        # cart 
-        cart = Cart(request) 
-        cart_id = request.session[settings.CART_SESSION_ID]
-
         form = self.form_class(request.POST)
         if form.is_valid():
             user = form.instance
             form.save()
             ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
             #response =  redirect('invoice:invoice-detail')
-            return redirect('immoshop:invoice_create', user_id=user.pk)
+            return redirect('immoshop:success' )
+        
+        dat = {
+            'currentPage': 1,
+            'account_form': form,
+        }
+        
 
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, context=data)
     
     
 
 from immoshop.forms import CustomFormSet
 from customs.forms import CustomCreatForm, AccountUserCreationForm
-class CreateAccount(View) :
+from django.views import View
+
+class CreateAccount(View):
     template_name = "immoshop/create_account_vuejs.html"
     form_class = AccountUserCreationForm
     currentPage = 1
+    form1_validate = 0
+    form2_validate = 0
 
     def get(self, request):
         account_form = AccountUserCreationForm()
@@ -370,33 +387,63 @@ class CreateAccount(View) :
             'account_form': account_form, 
             'custom_formset': custom_formset,
             'currentPage' : self.currentPage ,
-            }
-        
+            'form1_validate' : self.form1_validate,
+            'form2_validate' : self.form2_validate,
+        }
+        messages.add_message(self.request, messages.INFO,
+                             f"CreateAccount get() = { request.GET }")
         return render(request, self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
-        account_form = AccountUserCreationForm(request.POST)
-        custom_formset = CustomFormSet(request.POST)
+        account_form = AccountUserCreationForm(request.POST, prefix='account')
+        custom_formset = CustomFormSet(request.POST, prefix='custom')
+
+        messages.add_message(self.request, messages.INFO,
+                             f"CreateAccount post() = { request.POST }")
 
         if account_form.is_valid() and custom_formset.is_valid():
-            custom_formset.instance = account_form.save()
+            account_instance = account_form.save()
+            custom_formset.instance = account_instance
             custom_formset.save()
-            return redirect('success_url')
 
-        elif not custom_formset.is_valid(): 
-            self.currentPage = 2
-        else : 
-            self.currentPage = 1
+        if account_form.is_valid(): 
+            self.form1_validate = 1
+            
+        elif custom_formset.is_valid():
+            self.form2_validate = 1
   
         context = {
             'account_form': account_form, 
             'custom_formset': custom_formset,
             'currentPage' : self.currentPage,
+            'form1_validate' : self.form1_validate,
+            'form2_validate' : self.form2_validate,
         }
+
+        messages.add_message(self.request, messages.INFO, 
+                             f"CreateAccount POST : vform1={self.form1_validate} vform2 = {self.form2_validate}")
         return render(request, self.template_name, context=context)
 
-   
 
 def success(request):
-    return render(request, 'success.html')
+    return render(request, 'immoshop/success.html')
 
+def create_client(request, user_id):
+    author = User.objects.get(id=user_id)
+    books = Book.objects.filter(author=author)
+    formset = CustomFormSet(request.POST or None)
+ 
+    if request.method == "POST":
+        if formset.is_valid():
+            formset.instance = author
+            formset.save()
+            return redirect("create-book", pk=author.id)
+ 
+    context = {
+        "formset": formset,
+        "author": author,
+        "books": books
+    }
+ 
+    return render(request, "create_book.html", context)
+    

@@ -13,7 +13,37 @@ class CustomerForm(forms.ModelForm):
 
 CustomFormSet = forms.inlineformset_factory(
                 get_user_model(), 
-                Custom, 
-                form = CustomCreatForm, 
-                extra=1
+                Custom,
+                fields=('email', 'first_name','last_name', 'address1', 
+                         'phone_number', 'country', ),
+                min_num=2,  # minimum number of forms that must be filled in
+                extra=1,  # number of empty forms to display
+                can_delete=False  # show a checkbox in each form to delete the row
                 )
+
+fieldsset = (
+        (
+            "Personal Info",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "phone_number",
+                )
+            },
+        ),
+        (
+            "Company Info",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "company",
+                    "company_logo",
+                    "address1",
+                    "address2",
+                    "country",
+                ),
+            },
+        ),
+    )
