@@ -7,6 +7,7 @@ from django import forms
 User = get_user_model()
 
 class AccountUserCreationForm(UserCreationForm):
+       
     class Meta:
         model = get_user_model()
         fields = ('email',  )

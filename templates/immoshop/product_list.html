@@ -1,5 +1,6 @@
-{% extends 'immoshop/base.html' %}
-{% load i18n static %}
+{% extends "immoshop/base_shop.html" %}
+{% load static i18n %}
+{% load crispy_forms_tags %}
 
 {% if category %}{{ category.name }} {% else %} Products {% endif %}
 

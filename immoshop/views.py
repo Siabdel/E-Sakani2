@@ -9,7 +9,12 @@ from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 from django.utils.decorators import method_decorator
-from django.db import transaction
+from django.db import transaction   
+from immoshop.forms import CustomFormSet
+from customs.forms import CustomCreatForm, AccountUserCreationForm
+from django.views import View
+
+
 
 
 ## Generic View
@@ -155,9 +160,9 @@ class ProductDetailView(DetailView): # new
         return context
     
 class CustomCreate(CreateView):
-    template_name = "immoshop/create_account.html"
+    template_name = "immoshop/create_account_vuejs.html"
     form_class = AccountUserCreationForm
-    success_url = 'shop/success/' # we will be redirected to
+    success_url = '/shop/success/' # we will be redirected to
     
     def get_context_data(self, **kwargs):
         # author = get_object_or_404(User, pk=user_id)
@@ -169,14 +174,16 @@ class CustomCreate(CreateView):
             context['formset'] = CustomFormSet(instance=self.object)
         return context
     
-    def form_valid(self, form, formset):  
-        
+    def form_valid(self, form, formset): 
+        # 
         with transaction.atomic():
             self.object = form.save()
 
         if formset.is_valid():
             formset.instance = self.object
-            formset.save()
+            client = formset.save()
+            # create invvoice 
+            self.create_invoice(client)
         
         return super().form_valid(form)
      
@@ -185,6 +192,15 @@ class CustomCreate(CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         formset = CustomFormSet(self.request.POST, self.request.FILES)
+
+        # unique user
+        v_email = self.request.POST['email']
+        queryset =   User.objects.filter(email=v_email)
+        if  queryset.exists():
+            messages.add_message(self.request, messages.INFO,
+                             f" user exist ? = { v_email }")
+            ##raise Exception("post formser = ", self.request.POST['email'])
+            return self.form_invalid(form, formset)
 
         if form.is_valid() and formset.is_valid():
             return self.form_valid(form, formset)
@@ -196,8 +212,26 @@ class CustomCreate(CreateView):
                 self.get_context_data(form=form,
                                     formset=formset))
     
-    
-    
+    def create_invoice(self, custom): 
+        # cart 
+        cart = Cart(self.request) 
+        cart_id = self.request.session[settings.CART_SESSION_ID]
+        shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
+
+        # 1- create invoice + ItemInvoice
+        raise Exception("Custom instance = ", custom )
+        devis = devis_models.Invoice(title="Mon devis test", 
+                                        client = custom, 
+                                        invoice_total = 100,
+                                        )
+        items = shop_cart.item_articles.all()
+        for item in items:
+            devis_models.InvoiceItem.objects.create(
+                invoice = devis,
+                item = item, 
+                quantity=item.quantity,
+                rate = 12,
+            )
 class InvoiceCreate(View):
     template_name = "immoshop/create.html"
     form_class = CustomCreatForm
@@ -336,43 +370,7 @@ def generate_pdf_invoice(request, invoice_id):
     return response
 
 
-class UserCreate(View):
-    form_class = AccountUserCreationForm
-    template_name = "immoshop/create_account.html"
-
-    def get(self, request):
-        #
-        account_form = self.form_class()
-        context = {
-            'currentPage': 1,
-            'account_form': account_form,
-        }
-        
-        return render(request, self.template_name, context=context)
-    
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.instance
-            form.save()
-            ## url = reverse('invoice-detail', kwargs={'pk' : devis.pk}) 
-            #response =  redirect('invoice:invoice-detail')
-            return redirect('immoshop:success' )
-        
-        dat = {
-            'currentPage': 1,
-            'account_form': form,
-        }
-        
-
-        return render(request, self.template_name, context=data)
-    
-    
-
-from immoshop.forms import CustomFormSet
-from customs.forms import CustomCreatForm, AccountUserCreationForm
-from django.views import View
-
+ 
 class CreateAccount(View):
     template_name = "immoshop/create_account_vuejs.html"
     form_class = AccountUserCreationForm

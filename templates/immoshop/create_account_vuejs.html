@@ -5,17 +5,18 @@
 {% block content  %}
 
 <div id="app">
-    <h1>[[ msg ]]</h1>
-    <form method="post" >
+    <h3 class="bg-gradient text-danger"> [[ message_err ]] </h3>
+    <form method="post" id="id_account_form">
         {% csrf_token %}
-        <div v-if="currentStep === 1">
+        <div v-show="currentStep === 1">
             <h2>Step 1: Account Information</h2>
-            {{ account_form|crispy }}
+            {{ form.non_form_errors }}
+            {{ form|crispy }}
         </div>
-        <div v-if="currentStep != 2">
+        <div v-show="currentStep === 2">
             <h2>Step 2: Custom Information</h2>
-            {{ custom_formset.management_form }}
-            {% for form in custom_formset.forms %}
+            {{ formset.management_form }}
+            {% for form in formset.forms %}
                 <div> {{ form|crispy }} </div>
             {% endfor %}
         </div>
@@ -30,43 +31,92 @@
 
 {% block  extra_js %}
 <script>
-    vm = new Vue({
+    var vm = new Vue({
         el: '#app',
         delimiters: ['[[', ']]'],
         data(){
             return{
                 msg : "Create Account vue.js",
+                error : "",
+                userFound : "",
                 currentStep: 1,
-                form1_validate : {{ form1_validate }}, 
-                form2_validate : {{ form2_validate }}, 
                 totalSteps: 2,
+            }
+        },
+        created(){
+            if(this.findAccount(23)){
+                console.log("user found him !!!")
             }
         },
         //- 
         computed:{
-            suivant(){
-                console.log("form1_valide = ", this.form1_validate)
-                if(this.form1_validate){
-                    this.currentStep = 2
-                    return true
-                }else {
-                    return false
+            // 
+            message_err(){
+                if(this.error !== "" ){
+                    return this.error
                 }
             }
         },
 
         methods: {
+            form1_validate(){
+                const email = $('#id_email');
+                const passwd1 = $('#id_password1');
+                const passwd2 = $('#id_password2');
+                //console.log("email = ", passwd1.val())
+                if(email.val() !== "" && passwd1.val() && passwd2.val()){
+                    this.error = ""
+                    return true
+                } 
+                else if(email.val() === ""){ 
+                    //this.error = "merci de corriger ces erreurs "
+                    this.error = "Saisir votre email !! "
+                    email.focus()
+                    return false
+                }
+                else if(passwd1.val() === ""){ 
+                    //this.error = "merci de corriger ces erreurs "
+                    this.error = "Saisir votre mot de passe !! "
+                    passwd1.focus()
+                    return false
+                }
+                else if(passwd2.val() === "" || passwd1.val() != passwd2.val()){ 
+                    //this.error = "merci de corriger ces erreurs "
+                    this.error = "confirmer votre mot de passe !! "
+                    passwd2.focus()
+                    return false
+                }
+                return true
+            },
+
+            customFormValidate() {
+                // Vérifiez les champs pour chaque formulaire dans custom_formset.forms
+                let isValid = true;
+                console.log("customFormValidate =")
+                $('#id_account_form input[type!="hidden"]').each(function() {
+                    var id = $(this).attr('id');
+                    var name = $(this).attr('name');
+
+                    if ($(this).val() === "") {
+                        //console.log("submit form =", name, id)
+                        // Affichez un message d'erreur approprié
+                        this.error = "Veuillez remplir tous les champs. coriger le champ=",  name;
+                        isValid = false;
+                        return false; // Sortez de la boucle each
+                    }
+                });
+                return isValid;
+            },
             nextStep() {
-                console.log("currentStep = ", this.currentStep)
-                if (this.currentStep === 1) {
+                //console.log("currentStep = ", this.currentStep)
+                if (this.currentStep === 1 && this.form1_validate()) {
                     // si valid
                     this.currentStep++;
                 } 
                 else if(this.currentStep === 2) {
                     // Valider le formulaire CustomFormSet
-                    $('form').submit();
-                    if( this.form2_validate === 1 ){
-                        $('form').submit();
+                    if(this.form1_validate()){
+                        return true
                     }
                 }
             },
@@ -75,9 +125,31 @@
             },
             submitForm() {
                 // Cette méthode ne sera appelée que si les deux formulaires sont valides
-                console.log("Tous les formulaires sont valides, soumission du formulaire...")
-                $('form').submit();
-            }
+                // Valider le formulaire CustomFormSet
+                const first_name = $('id_custom-0-first-name')
+                //console.log("submit form =", first_name)
+                //--
+                if (this.customFormValidate()) {
+                    console.log("submit formulaire est valid *** = ", first_name)
+                    $('form').submit();
+                }else {
+                    this.currentStep = 2
+                    first_name.focus()
+                    //console.log("submit form_invalid =", first_name)
+                }
+            },
+
+            findAccount(user_id){
+                const url = 'http://localhost:8000/shop/api/user/23/'
+
+                fetch(url)
+                .then(response => response.json())
+                .then( data => {
+                this.userFound = data
+                console.log("data load = ",this.userFound.id )
+                } )
+                .catch(error => console.log("erreur = " + error));
+            },
         }
     });
 </script>

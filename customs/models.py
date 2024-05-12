@@ -48,4 +48,4 @@ class Custom(models.Model):
         return reverse("client-detail", kwargs={"pk": self.pk})
 
     def __repr__(self):
-        return f"Client: {self.first_name} {self.last_name}"
+        return f"Custom: {self.first_name} {self.last_name}"
