@@ -32,6 +32,7 @@ from weasyprint import HTML
 from core.orders.models import OrderItem
 from core.product import models as pro_models
 from core.shop import models as sh_models 
+from customs import models as cu_models 
 from immoshop import models as immo_models
 from invoices import models as devis_models
 from core.cart.cart import Cart
@@ -177,13 +178,17 @@ class CustomCreate(CreateView):
     def form_valid(self, form, formset): 
         # 
         with transaction.atomic():
-            self.object = form.save()
+            self.object = form.save(commit=False) # update username & save form
+            self.object.username = self.object.email.split('@')[0]
+            form.save()
 
-        if formset.is_valid():
-            formset.instance = self.object
-            client = formset.save()
-            # create invvoice 
-            self.create_invoice(client)
+            if formset.is_valid():
+                formset.instance = self.object
+                #client = formset.save(commit=False)
+                formset.save()
+        #
+        # create invvoice 
+        self.create_invoice(formset[0].cleaned_data)
         
         return super().form_valid(form)
      
@@ -196,11 +201,13 @@ class CustomCreate(CreateView):
         # unique user
         v_email = self.request.POST['email']
         queryset =   User.objects.filter(email=v_email)
+        """ 
         if  queryset.exists():
             messages.add_message(self.request, messages.INFO,
                              f" user exist ? = { v_email }")
             ##raise Exception("post formser = ", self.request.POST['email'])
             return self.form_invalid(form, formset)
+        """
 
         if form.is_valid() and formset.is_valid():
             return self.form_valid(form, formset)
@@ -208,9 +215,9 @@ class CustomCreate(CreateView):
             return self.form_invalid(form, formset)
         
     def form_invalid(self, form, formset):
-        return self.render_to_response(
-                self.get_context_data(form=form,
-                                    formset=formset))
+        context = self.get_context_data(form=form, formset=formset)
+        ##context['currentStep'] = 2
+        return self.render_to_response(context)
     
     def create_invoice(self, custom): 
         # cart 
@@ -219,9 +226,12 @@ class CustomCreate(CreateView):
         shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
 
         # 1- create invoice + ItemInvoice
-        raise Exception("Custom instance = ", custom )
+        ## raise Exception("Custom instance = ", custom.get('email'))
+        email_client =  custom.get('email')
+        client_obj = cu_models.Custom.objects.get(email=email_client)
         devis = devis_models.Invoice(title="Mon devis test", 
-                                        client = custom, 
+                                        author = self.request.user,
+                                        client = client_obj, 
                                         invoice_total = 100,
                                         )
         items = shop_cart.item_articles.all()
@@ -230,8 +240,9 @@ class CustomCreate(CreateView):
                 invoice = devis,
                 item = item, 
                 quantity=item.quantity,
+                price=item.unit_price,
                 rate = 12,
-            )
+        )
 class InvoiceCreate(View):
     template_name = "immoshop/create.html"
     form_class = CustomCreatForm

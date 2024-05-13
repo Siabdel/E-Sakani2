@@ -86,7 +86,7 @@ class BaseProductImage(PolymorphicModel):
 
 class BaseItemArticle(models.Model):    
     quantity = models.IntegerField(verbose_name=_('quantity'))
-    unit_price = models.DecimalField(max_digits=18, decimal_places=2, 
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2, 
                                      verbose_name=_('unit price'))
      # product as generic relation
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

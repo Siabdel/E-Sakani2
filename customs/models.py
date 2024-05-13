@@ -39,7 +39,7 @@ class Custom(models.Model):
         ordering = ('first_name', 'last_name', )
         verbose_name: "Customer"
         verbose_name_plural: "Customers"  # client 
-
+        unique_together = ('email', )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

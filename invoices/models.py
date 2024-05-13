@@ -8,10 +8,7 @@ from customs.models import Custom
 
 class Invoice(models.Model):
     title = models.CharField(max_length=200)
-    user = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.CASCADE,
-    )
+    author = models.ForeignKey( get_user_model(), on_delete=models.CASCADE,)
     client = models.ForeignKey(Custom, on_delete=models.CASCADE)
     invoice_total = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, editable=False, default=0
