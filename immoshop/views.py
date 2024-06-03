@@ -236,11 +236,12 @@ class CustomCreate(CreateView):
                                         )
         items = shop_cart.item_articles.all()
         for item in items:
+            article = item.content_type
             devis_models.InvoiceItem.objects.create(
                 invoice = devis,
-                item = item, 
-                quantity=item.quantity,
-                price=item.unit_price,
+                item = article, 
+                quantity = item.quantity,
+                price = article.unit_price,
                 rate = 12,
         )
 class InvoiceCreate(View):
