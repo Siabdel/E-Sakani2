@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Directory project au meme niveau de settings.py
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+SHOP_APP_LABEL = 'myshop'
+APP_LABEL = 'myshop'
 
 
 

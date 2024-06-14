@@ -120,7 +120,7 @@ class ProductImage(admin.ModelAdmin):
     pass
     #list_display =  [field.name for field in immo_models.ImmoProductImage._meta.get_fields()]
 
-class BaseArticleAdmin(admin.ModelAdmin):
+class BaseArticleAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         """

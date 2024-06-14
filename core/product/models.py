@@ -10,10 +10,11 @@ from django.conf import settings
 from core.taxonomy import models as tax_models
 from core.base_product import models as base_models
 from core.taxonomy import models as core_models
-from polymorphic.models import PolymorphicModel, PolymorphicManager
 from core.profile.models import UProfile
 from core.profile.models import Societe
 from core.taxonomy.models import TaggedItem, MPCategory
+from polymorphic.models import PolymorphicModel, PolymorphicManager
+from core import deferred
 
 # Create your Product.
 class Product(base_models.BaseProduct):
@@ -50,6 +51,5 @@ class ProductSpecificationValue(PolymorphicModel):
     value   = models.CharField(_("Value"), max_length=255)
     
 
-class ProductImage(base_models.BaseProductImage):
+class ProductImage(base_models.BaseImage):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
-

@@ -48,9 +48,10 @@ class Cart(object):
     def add(self, product, quantity=1, update_quantity=False):
         #
         # Vérifiez si un article pour ce produit existe déjà dans le panier
-        #messages.add_message(self.request, messages.INFO, f"item quantite={quantity} updatea= {update_quantity}"  )
+        messages.add_message(self.request, messages.INFO,
+                             f"item quantite={product.price} updatea= {update_quantity}"  )
         try :
-            item, created = sh_models.ItemArticle.objects.get_or_create(
+            item = sh_models.ItemArticle.objects.get(
                                             cart=self.cart, 
                                             object_id=product.id,
                                             content_type = ContentType.objects.get_for_model(type(product)),
@@ -64,18 +65,13 @@ class Cart(object):
         
         except Exception as err:
             item, created = sh_models.ItemArticle.objects.get_or_create(
-                                                cart=self.cart, 
-                                                object_id=product.id,
-                                                content_type = ContentType.objects.get_for_model(type(product)),
-                                                quantity=quantity,
-                                                unit_price = product.price,
-                                            defaults={'quantity': 1, 'unit_price': product.price}
-                                                )
-       
-
-            messages.add_message(self.request, messages.INFO, f"add item {created}"  )
-            #
-
+                                    cart=self.cart,
+                                    object_id=product.id,
+                                    content_type = ContentType.objects.get_for_model(type(product)),
+                                    quantity=quantity,
+                                    unit_price = product.price,
+                                    defaults={'quantity': 1, 'unit_price': product.price}
+                                    )
         
     def save(self):
         self.session[settings.CART_SESSION_ID] = self.cart

@@ -15,6 +15,7 @@ from core.profile.models import Societe
 from core.taxonomy.models import TaggedItem, MPCategory
 # from mapwidgets.widgets import GooglePointField
 ##from django.contrib.gis.db import models as gmodels
+from core import deferred
 
 # Create your models here.
 class Partenaire(models.Model):
@@ -40,5 +41,6 @@ class Project(base_models.BaseProject):
     lat = models.FloatField(null=True, blank=True) # latitude
     #location = gmodels.PointField(null=True, blank=True)
 
-class ProjectImage(base_models.BaseProductImage):
-    project = models.ForeignKey(Project, related_name="images", on_delete=models.CASCADE)
+
+class ProjectImage(base_models.BaseImage) :
+    project = models.ForeignKey(Project, related_name='images', null=True, blank=True, on_delete=models.CASCADE)

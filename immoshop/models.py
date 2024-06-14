@@ -13,9 +13,6 @@ from core.shop import models as sh_models
 from core.product import models as pro_models
 from project import models as proj_models
 
-from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
-
-
 class ImmoProduct(pro_models.Product):
     project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
     

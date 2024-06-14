@@ -9,6 +9,7 @@ from django.conf import settings
 from django_resized import ResizedImageField
 from core.utils import make_thumbnail
 from polymorphic.models import PolymorphicModel, PolymorphicManager
+from core import  deferred
 
 
 class ProductManager(PolymorphicManager):
@@ -27,7 +28,7 @@ class BaseProduct(PolymorphicModel):
     updated_at = models.DateTimeField(auto_now=True)
     default_image = ResizedImageField( upload_to='upload/product_images/%Y/%m/', blank=True)
     in_stock = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(_('Active'), default=True, help_text=_("Is this product publicly visible."),)
     product_code = models.BigIntegerField(_("Product Code"), null=True, blank=True)
     objects = ProductManager()
     products = ProductManager()
@@ -53,7 +54,7 @@ class BaseProduct(PolymorphicModel):
         # /media/upload/product_images/2024/03/logo-appartement_I3pvvys.jpg
         return not os.path.exists(output_dir)
 
-class BaseProductImage(PolymorphicModel):
+class BaseImage(PolymorphicModel):
     title = models.CharField(_('Titre'), max_length=50, null=True, blank=True)
     slug = models.SlugField(max_length=255, db_index=True, null=True, blank=True)
     image = models.ImageField(upload_to='upload/product_images/%Y/%m/', blank=True)
@@ -83,10 +84,12 @@ class BaseProductImage(PolymorphicModel):
     class Meta:
         abstract = True
 
-
+ 
 class BaseItemArticle(models.Model):    
-    quantity = models.IntegerField(verbose_name=_('quantity'))
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2, 
+    quantity = models.IntegerField(verbose_name=_('quantity'),  default=1)
+
+    unit_price = models.DecimalField(max_digits=10, 
+                                     decimal_places=2, 
                                      verbose_name=_('unit price'))
      # product as generic relation
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -241,4 +244,3 @@ class BaseProject(PolymorphicModel):
         return self.documents.all()
     # get pieces jointes au project
  
-
