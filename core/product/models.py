@@ -18,6 +18,7 @@ from core import deferred
 
 # Create your Product.
 class Product(base_models.BaseProduct):
+    lookup_field = 'id'
     category = models.ForeignKey(MPCategory, related_name='products', null=True, blank=True, on_delete=models.CASCADE)
 
 

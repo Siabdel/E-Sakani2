@@ -1,1 +1,10 @@
-./manage.py makemigrations taxonomy product cart shop orders immoshop  custom_accounts invoices
+## delete db
+rm db.sqlite3
+## delete migrations files
+find . -name migrations -exec rm -r {} ;
+### makemigrate 
+./manage.py makemigrations profile taxonomy product cart shop orders immoshop customs invoices project profile
+## migrate 
+#./manage.py migrate
+##
+#./manage.py createsuperuser

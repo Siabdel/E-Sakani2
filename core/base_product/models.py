@@ -10,11 +10,29 @@ from django_resized import ResizedImageField
 from core.utils import make_thumbnail
 from polymorphic.models import PolymorphicModel, PolymorphicManager
 from core import  deferred
+#from core.fields import JSONField
 
+class PolymorphicProductMetaclass(deferred.PolymorphicForeignKeyBuilder):
+    @classmethod
+    def perform_meta_model_check(cls, Model):
+        """
+        Perform some safety checks on the ProductModel being created.
+        """
+        if not isinstance(Model.objects, BaseProductManager):
+            msg = "Class `{}.objects` must provide ModelManager inheriting from BaseProductManager"
+            raise NotImplementedError(msg.format(Model.__name__))
 
-class ProductManager(PolymorphicManager):
+        if not isinstance(getattr(Model, 'lookup_fields', None), (list, tuple)):
+            msg = "Class `{}` must provide a tuple of `lookup_fields` so that we can easily lookup for Products"
+            raise NotImplementedError(msg.format(Model.__name__))
+
+        if not callable(getattr(Model, 'get_price', None)):
+            msg = "Class `{}` must provide a method implementing `get_price(request)`"
+            raise NotImplementedError(msg.format(cls.__name__))
+        
+class BaseProductManager(PolymorphicManager):
     def get_queryset(self):
-        return super(ProductManager, self).get_queryset().filter(is_active=True)
+        return super(BaseProductManager, self).get_queryset().filter(is_active=True)
 class BaseProduct(PolymorphicModel):
     name = models.CharField(max_length=100, db_index=True)
     slug = models.SlugField(max_length=255, db_index=True)
@@ -29,9 +47,11 @@ class BaseProduct(PolymorphicModel):
     default_image = ResizedImageField( upload_to='upload/product_images/%Y/%m/', blank=True)
     in_stock = models.BooleanField(default=True)
     is_active = models.BooleanField(_('Active'), default=True, help_text=_("Is this product publicly visible."),)
-    product_code = models.BigIntegerField(_("Product Code"), null=True, blank=True)
-    objects = ProductManager()
-    products = ProductManager()
+    product_code = models.CharField( _("Product code"), max_length=255, null=True, blank=True,
+        help_text=_("Product code of added item."),
+    )
+    objects = BaseProductManager()
+    #products = BaseProductManager()
 
     class Meta:
         abstract = True
@@ -94,8 +114,12 @@ class BaseItemArticle(models.Model):
      # product as generic relation
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField() 
-    # quand
+    # 
     created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField( _("Updated at"), auto_now=True,)
+
+    extra = models.JSONField(verbose_name=_("Arbitrary information for this cart item"))
+
     
     class Meta:
         abstract = True
@@ -106,6 +130,14 @@ class BaseItemArticle(models.Model):
     @property
     def total_price(self):
         return self.quantity * self.unit_price
+    
+    def get_price(self, request):
+        """
+        Hook for returning the current price of this product.
+        The price shall be of type Money. Read the appropriate section on how to create a Money
+        type for the chosen currency.
+        """
+        return self.unit_price
 
     # product
     def get_product(self):

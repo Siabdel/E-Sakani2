@@ -21,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Directory project au meme niveau de settings.py
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-SHOP_APP_LABEL = 'myshop'
-APP_LABEL = 'myshop'
+SHOP_APP_LABEL = 'immoshop'
+APP_LABEL = 'immoshop'
 
 
 
@@ -271,3 +271,13 @@ CORS_ORIGIN_REGEX_WHITELIST = [
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_URL = "/accounts/login/"
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
