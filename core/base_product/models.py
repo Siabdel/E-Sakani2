@@ -1,5 +1,8 @@
 import os
 from django.db import models
+from django.core import checks
+from django.core.cache import cache
+
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.contrib.contenttypes.models import ContentType
@@ -10,8 +13,7 @@ from django_resized import ResizedImageField
 from core.utils import make_thumbnail
 from polymorphic.models import PolymorphicModel, PolymorphicManager
 from core import  deferred
-#from core.fields import JSONField
-
+from core.taxonomy.models import TaggedItem, MPCategory
 class PolymorphicProductMetaclass(deferred.PolymorphicForeignKeyBuilder):
     @classmethod
     def perform_meta_model_check(cls, Model):
@@ -33,7 +35,9 @@ class PolymorphicProductMetaclass(deferred.PolymorphicForeignKeyBuilder):
 class BaseProductManager(PolymorphicManager):
     def get_queryset(self):
         return super(BaseProductManager, self).get_queryset().filter(is_active=True)
-class BaseProduct(PolymorphicModel):
+class BaseProduct(PolymorphicModel,  metaclass=PolymorphicProductMetaclass):
+    category = deferred.ForeignKey(MPCategory, related_name='products', null=True, blank=True, on_delete=models.CASCADE)
+
     name = models.CharField(max_length=100, db_index=True)
     slug = models.SlugField(max_length=255, db_index=True)
     description = models.TextField(blank=True)
@@ -56,6 +60,8 @@ class BaseProduct(PolymorphicModel):
     class Meta:
         abstract = True
         ordering = ('name', )
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
         #index_together = (('id', 'slug'),)
 
     def __str__(self):
@@ -69,10 +75,141 @@ class BaseProduct(PolymorphicModel):
         self.save()
     def default_image_exist(self):
         output_dir = os.path.join(settings.BASE_DIR, self.default_image.url)
-        #output_dir = os.path.join("/home/django/Depots/www/Back-end/Django/envEsakani/E-sakani/", self.default_image.url)
-        #raise Exception(output_dir)
-        # /media/upload/product_images/2024/03/logo-appartement_I3pvvys.jpg
         return not os.path.exists(output_dir)
+    
+    
+    @property
+    def product_model(self):
+        """
+        Returns the polymorphic model name of the product's class.
+        """
+        return self.polymorphic_ctype.model
+
+    def get_absolute_url(self):
+        """
+        Hook for returning the canonical Django URL of this product.
+        """
+        msg = "Method get_absolute_url() must be implemented by subclass: `{}`"
+        raise NotImplementedError(msg.format(self.__class__.__name__))
+
+    def get_price(self, request):
+        """
+        Hook for returning the current price of this product.
+        The price shall be of type Money. Read the appropriate section on how to create a Money
+        type for the chosen currency.
+        Use the `request` object to vary the price according to the logged in user,
+        its country code or the language.
+        """
+        msg = "Method get_price() must be implemented by subclass: `{}`"
+        raise NotImplementedError(msg.format(self.__class__.__name__))
+    def get_product_variant(self, **kwargs):
+            """
+            Hook for returning the variant of a product using parameters passed in by **kwargs.
+            If the product has no variants, then return the product itself.
+
+            :param **kwargs: A dictionary describing the product's variations.
+            """
+            return self
+
+    def get_product_variants(self):
+        """
+        Hook for returning a queryset of variants for the given product.
+        If the product has no variants, then the queryset contains just itself.
+        """
+        return self._meta.model.objects.filter(pk=self.pk)
+
+    def get_availability(self, request, **kwargs):
+        """
+        Hook for checking the availability of a product.
+
+        :param request:
+            Optionally used to vary the availability according to the logged in user,
+            its country code or language.
+
+        :param **kwargs:
+            Extra arguments passed to the underlying method. Useful for products with
+            variations.
+
+        :return: An object of type :class:`shop.models.product.Availability`.
+        """
+        return Availability()
+
+    def managed_availability(self):
+        """
+        :return True: If this product has its quantity managed by some inventory functionality.
+        """
+        return False
+
+    def is_in_cart(self, cart, watched=False, **kwargs):
+        """
+        Checks if the current product is already in the given cart, and if so, returns the
+        corresponding cart_item.
+
+        :param watched (bool): This is used to determine if this check shall only be performed
+            for the watch-list.
+
+        :param **kwargs: Optionally one may pass arbitrary information about the product being looked
+            up. This can be used to determine if a product with variations shall be considered
+            equal to the same cart item, resulting in an increase of it's quantity, or if it
+            shall be considered as a separate cart item, resulting in the creation of a new item.
+
+        :returns: The cart item (of type CartItem) containing the product considered as equal to the
+            current one, or ``None`` if no product matches in the cart.
+        """
+        from shop.models.cart import CartItemModel
+        cart_item_qs = CartItemModel.objects.filter(cart=cart, product=self)
+        return cart_item_qs.first()
+
+    def deduct_from_stock(self, quantity, **kwargs):
+        """
+        Hook to deduct a number of items of the current product from the stock's inventory.
+
+        :param quantity: Number of items to deduct.
+
+        :param **kwargs:
+            Extra arguments passed to the underlying method. Useful for products with
+            variations.
+        """
+
+    def get_weight(self):
+        """
+        Optional hook to return the product's gross weight in kg. This information is required to
+        estimate the shipping costs. The merchants product model shall override this method.
+        """
+        return 0
+
+    @classmethod
+    def check(cls, **kwargs):
+        """
+        Internal method to check consistency of Product model declaration on bootstrapping
+        application.
+        """
+        errors = super().check(**kwargs)
+        try:
+            cls.product_name
+        except AttributeError:
+            msg = "Class `{}` must provide a model field implementing `product_name`"
+            errors.append(checks.Error(msg.format(cls.__name__)))
+        return errors
+
+    def update_search_index(self):
+        """
+        Update the Document inside the Elasticsearch index after changing relevant parts
+        of the product.
+        """
+        documents = elasticsearch_registry.get_documents([ProductModel])
+        if settings.USE_I18N:
+            for language, _ in settings.LANGUAGES:
+                try:
+                    document = next(doc for doc in documents if doc._language == language)
+                except StopIteration:
+                    document = next(doc for doc in documents if doc._language is None)
+                document().update(self)
+        else:
+            document = next(doc for doc in documents)
+            document().update(self)
+
+
 
 class BaseImage(PolymorphicModel):
     title = models.CharField(_('Titre'), max_length=50, null=True, blank=True)
@@ -103,55 +240,38 @@ class BaseImage(PolymorphicModel):
 
     class Meta:
         abstract = True
+    def product_type(self):
+        """
+        Returns the polymorphic type of the product.
+        """
+        return force_str(self.polymorphic_ctype)
+    product_type.short_description = _("Product type")
 
- 
-class BaseItemArticle(models.Model):    
-    quantity = models.IntegerField(verbose_name=_('quantity'),  default=1)
-
-    unit_price = models.DecimalField(max_digits=10, 
-                                     decimal_places=2, 
-                                     verbose_name=_('unit price'))
-     # product as generic relation
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField() 
-    # 
-    created_at  = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField( _("Updated at"), auto_now=True,)
-
-    extra = models.JSONField(verbose_name=_("Arbitrary information for this cart item"))
-
-    
-    class Meta:
-        abstract = True
-        verbose_name = _('ItemArticle')
-        verbose_name_plural = _('ItemArticles')
-        ordering = ('-created_at',)
-    
     @property
-    def total_price(self):
-        return self.quantity * self.unit_price
-    
+    def product_model(self):
+        """
+        Returns the polymorphic model name of the product's class.
+        """
+        return self.polymorphic_ctype.model
+
+    def get_absolute_url(self):
+        """
+        Hook for returning the canonical Django URL of this product.
+        """
+        msg = "Method get_absolute_url() must be implemented by subclass: `{}`"
+        raise NotImplementedError(msg.format(self.__class__.__name__))
+
     def get_price(self, request):
         """
         Hook for returning the current price of this product.
         The price shall be of type Money. Read the appropriate section on how to create a Money
         type for the chosen currency.
+        Use the `request` object to vary the price according to the logged in user,
+        its country code or the language.
         """
-        return self.unit_price
+        msg = "Method get_price() must be implemented by subclass: `{}`"
+        raise NotImplementedError(msg.format(self.__class__.__name__))
 
-    # product
-    def get_product(self):
-        return self.content_type.get_object_for_this_type(pk=self.object_id)
-    
-    def set_product(self, product):
-        self.content_type = ContentType.objects.get_for_model(type(product))
-        self.object_id = product.pk
-    
-    product = property(get_product, set_product) 
-
-    def __str__(self):
-        return "product : {}".format(self.product)
-    
 
 class BaseProject(PolymorphicModel):
     """

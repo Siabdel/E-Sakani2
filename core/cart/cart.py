@@ -53,8 +53,7 @@ class Cart(object):
         try :
             item = sh_models.ItemArticle.objects.get(
                                             cart=self.cart, 
-                                            object_id=product.id,
-                                            content_type = ContentType.objects.get_for_model(type(product)),
+                                            product=product,
                                             )
             if update_quantity:
                 item.quantity = quantity             
@@ -66,8 +65,7 @@ class Cart(object):
         except Exception as err:
             item, created = sh_models.ItemArticle.objects.get_or_create(
                                     cart=self.cart,
-                                    object_id=product.id,
-                                    content_type = ContentType.objects.get_for_model(type(product)),
+                                    product=product,
                                     quantity=quantity,
                                     unit_price = product.price,
                                     defaults={'quantity': 1, 'unit_price': product.price}

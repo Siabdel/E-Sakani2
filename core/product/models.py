@@ -18,10 +18,21 @@ from core import deferred
 
 # Create your Product.
 class Product(base_models.BaseProduct):
-    lookup_field = 'id'
-    category = models.ForeignKey(MPCategory, related_name='products', null=True, blank=True, on_delete=models.CASCADE)
+    """_summary_
+
+    Args:
+        base_models (_type_): _description_
+    """
+    product_name = models.CharField(max_length=100, null=True, blank=True)
+    lookup_fields = ('id', 'slug')  # Ajout de lookup_fields
 
 
+    def product_type(self):
+        return "product"
+    class Meta :
+        verbose_name = _("Product")
+        verbose_name_plural = _("Products")
+        
 
 class ProductType(models.Model):
     name = models.CharField(_('Name'), max_length=150, db_index=True)
