@@ -8,8 +8,7 @@ from django.contrib import admin
 from  mptt.admin  import MPTTModelAdmin
 # Register your models here.
 from project import models as proj_models 
-from immoshop import models as immo_models 
-from immoshop.admin import BaseArticleAdmin
+from core.product import models as pro_models 
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
@@ -28,7 +27,7 @@ class CityAdmin(admin.ModelAdmin):
 
 
 class ProductInline(admin.TabularInline):
-    model = immo_models.ImmoProduct
+    model = pro_models.Product
     fields = ('name', 'slug', 'price','stock',)
     extra = 1
 
@@ -41,7 +40,7 @@ class ProjectImagesInline(admin.TabularInline):
 @admin.register(proj_models.Project)
 class ProjectAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     #base_model = base_models.BaseProject
-    inlines = [ProjectImagesInline, ProductInline, ]
+    inlines = [ProjectImagesInline,  ]
     # list_display =  [field.name for field in proj_models.Project._meta.get_fields()]
     list_display =  ['title', 'slug', 'manager', 'start_date', 'visibilite', 'closed',  ]
     #exclude = ["author", "manager", ]

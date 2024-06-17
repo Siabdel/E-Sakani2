@@ -75,9 +75,10 @@ INSTALLED_APPS = [
     #'markdownx', # <-- needed for adding markdown to forms
     # local app
     'mapwidgets', ## new google map
-    'immoshop.apps.ImmoShopConfig', # Cart
+    'immoshop.apps.ImmoShopConfig', # Immobilier
     "invoices",
     'customs', # custom
+    'autocar.apps.AutocarConfig', # Autocar
     
 ]
 

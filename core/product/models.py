@@ -1,10 +1,12 @@
 from datetime import datetime
+from core import deferred
 from django.utils import timezone
 from django.db import models
 from django.urls import reverse, resolve
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 from django.contrib.auth.models import User
 from django.conf import settings
 from core.taxonomy import models as tax_models
@@ -13,18 +15,21 @@ from core.taxonomy import models as core_models
 from core.profile.models import UProfile
 from core.profile.models import Societe
 from core.taxonomy.models import TaggedItem, MPCategory
-from polymorphic.models import PolymorphicModel, PolymorphicManager
-from core import deferred
 
 # Create your Product.
 class Product(base_models.BaseProduct):
     """_summary_
-
-    Args:
-        base_models (_type_): _description_
     """
     product_name = models.CharField(max_length=100, null=True, blank=True)
     lookup_fields = ('id', 'slug')  # Ajout de lookup_fields
+    ## project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
+
+    def get_images(self):
+        return self.images.all()
+
+    def get_absolute_url(self):
+        return reverse("shop:product_car_detail", args=[str(self.id)])
+
 
 
     def product_type(self):

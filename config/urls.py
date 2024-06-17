@@ -24,7 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('project.urls'), name='home'),
-    path('shop/', include('immoshop.urls'), name='shop_home'),
     path('sh/', include('core.shop.urls'), name='sh_home'),
     path('cart/', include('core.cart.urls')),
     path('orders/', include('core.orders.urls')),
@@ -32,6 +31,10 @@ urlpatterns = [
     path("custom/", include("customs.urls")),
     path("invoice/", include("invoices.urls")),
     path('mfu/', include("core.mfilesupload.urls")),
+    ## Projet Immobilier
+    path('shop/', include('immoshop.urls'), name='shop_home'),
+    ## Projet Concession Auto
+    path('car/', include('autocar.urls'), name='shop_car_home'),
 ] 
 # ... the rest of your URLconf goes here ...
 ## add static 

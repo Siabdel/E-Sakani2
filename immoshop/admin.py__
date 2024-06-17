@@ -13,10 +13,6 @@ from core.base_product import models as base_models
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
-class ProductSpecificationInline(admin.TabularInline):
-    model = pro_models.ProductSpecification
-
-
 class ProductSpecificationValueInline(StackedPolymorphicInline):
     class ImmoSpecificationValueInline(StackedPolymorphicInline.Child):
         model = immo_models.ImmoProductSpecificationValue

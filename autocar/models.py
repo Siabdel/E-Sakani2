@@ -1,6 +1,6 @@
 # models.py
-from typing import Any, MutableMapping
 from django.db import models
+from typing import Any, MutableMapping
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.contrib.contenttypes.models import ContentType
@@ -14,20 +14,22 @@ from core.product import models as pro_models
 from project import models as proj_models
 
 
+# Create your models here.
 
-class ImmoProduct(pro_models.Product):
+class VehiculeProduct(pro_models.Product):
     project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
-    
+    couleur = models.CharField(max_length=100)
+
     def get_images(self):
         return self.images.all()
 
     def get_absolute_url(self):
-        return reverse("immoshop:product_immo_detail", args=[str(self.id)])
+        return reverse("autocar:product_car_detail", args=[str(self.id)])
 
-class ImmoProductImage(pro_models.ProductImage):
+class CarProductImage(pro_models.ProductImage):
     pass
     
-class ImmoProductSpecificationValue(pro_models.ProductSpecificationValue):
+class CarProductSpecificationValue(pro_models.ProductSpecificationValue):
     """ The product specification value table hold each of the 
     product individal specification or bespoke features.
     """
