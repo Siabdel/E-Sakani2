@@ -44,7 +44,7 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('immoshop:product_list_by_category', args=[self.slug])
+        return reverse('product:product_list_by_category', args=[self.slug])
 
 class MPCategory(MPTTModel):
     """ Category table implement MPTT"""
@@ -64,7 +64,7 @@ class MPCategory(MPTTModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('immoshop:product_list_by_category', args=[self.slug])
+        return reverse('product:product_list_by_category', args=[self.slug])
 
 
 

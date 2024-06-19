@@ -4,9 +4,10 @@ import os
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
-from core.product import models as pro_models
 from django.conf import settings
 from django.apps import apps
+## Local
+from core.product import models as pro_models
 
 
 class Dict2Obj(object):
@@ -56,13 +57,15 @@ def make_thumbnail(image, size=(100, 100)):
     thumbnail = File(thumb_io, name=image.name) # create a django friendly File object
 
     return thumbnail
+
+##  
 def get_product_model():
-    product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', pro_models.Product)
+    product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', "core.product.Product")
     app_label, model_name = product_model_string.split('.')
-    #raise Exception(f"model = {app_label} - {model_name}")
-
-    return apps.get_model(app_label, model_name)
-
+    model = apps.get_model(app_label, model_name)
+    if model is None:
+        raise LookupError(f"App '{app_label}' doesn't have a '{model_name}' model.")
+    return model
 def process_resize_image(image, output_dir, thumbnail_size=(100, 100), large_size=(800, 600)):
     """
     Traite une images de produit en créant des miniatures de taille uniforme

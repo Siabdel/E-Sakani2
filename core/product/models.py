@@ -15,22 +15,21 @@ from core.taxonomy import models as core_models
 from core.profile.models import UProfile
 from core.profile.models import Societe
 from core.taxonomy.models import TaggedItem, MPCategory
+from project import models as proj_models
 
 # Create your Product.
 class Product(base_models.BaseProduct):
     """_summary_
     """
+    project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=100, null=True, blank=True)
     lookup_fields = ('id', 'slug')  # Ajout de lookup_fields
-    ## project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
 
     def get_images(self):
         return self.images.all()
 
     def get_absolute_url(self):
         return reverse("shop:product_car_detail", args=[str(self.id)])
-
-
 
     def product_type(self):
         return "product"
@@ -63,10 +62,12 @@ class ProductSpecificationValue(PolymorphicModel):
     """ The product specification value table hold each of the 
     product individal specification or bespoke features.
     """
-    product = models.ForeignKey(Product, verbose_name=_(""), on_delete=models.CASCADE)
+    product = deferred.models.ForeignKey(Product, verbose_name=_(""), on_delete=models.CASCADE)
+    category = deferred.ForeignKey(MPCategory, related_name='products', null=True, blank=True, on_delete=models.CASCADE)
     specification = models.ForeignKey(ProductSpecification, on_delete=models.RESTRICT)
     value   = models.CharField(_("Value"), max_length=255)
     
 
 class ProductImage(base_models.BaseImage):
     product = models.ForeignKey(Product, related_name="images", on_delete=models.CASCADE)
+    pass

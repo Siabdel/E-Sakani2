@@ -3,21 +3,10 @@ from django.db import models
 from typing import Any, MutableMapping
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.auth.models import User
-# from ofschedule.models import DjangoMachine
-from config import settings
-from core.base_product import models as base_models
-from core.shop import models as sh_models
 from core.product import models as pro_models
-from project import models as proj_models
-
 
 # Create your models here.
-
 class VehiculeProduct(pro_models.Product):
-    project = models.ForeignKey(proj_models.Project, on_delete=models.CASCADE)
     couleur = models.CharField(max_length=100)
 
     def get_images(self):
@@ -26,8 +15,13 @@ class VehiculeProduct(pro_models.Product):
     def get_absolute_url(self):
         return reverse("autocar:product_car_detail", args=[str(self.id)])
 
+    def __str__(self):
+        return super().__str__()
 class CarProductImage(pro_models.ProductImage):
     pass
+
+    def __str__(self):
+        return super().__str__()
     
 class CarProductSpecificationValue(pro_models.ProductSpecificationValue):
     """ The product specification value table hold each of the 

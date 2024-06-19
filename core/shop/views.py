@@ -1,5 +1,5 @@
 
-# immoshop/views.py
+# product/views.py
 from typing import Any
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,9 +12,11 @@ from core.cart.forms import CartAddProductForm
 from core.product import models as pro_models
 from core.shop import models as msh_models 
 from core.taxonomy import models as tax_models
+from autocar import models as car_models
 
 # product Model setting
-product_model = get_product_model()
+#product_model = get_product_model()
+product_model = car_models.VehiculeProduct
 
 def category_list(request, categoy_slug=None ):
     category = get_object_or_404(pro_models.MPCategory, slug=categoy_slug)
@@ -26,7 +28,7 @@ def category_list(request, categoy_slug=None ):
             "categoy": category,
             "products": products,
             }
-    return render(request, "immoshop/category_list.html", context=context)
+    return render(request, "product/category_list.html", context=context)
     
 
 def product_list(request, category_slug=None):
@@ -42,7 +44,7 @@ def product_list(request, category_slug=None):
         'categories': categories,
         'products': products
     }
-    return render(request, "immoshop/product_detail.html", context=pro_context)
+    return render(request, "product/product_detail.html", context=pro_context)
 
 def product_home(request, category_slug=None):
     products_list = product_model.objects.all()
@@ -70,7 +72,7 @@ def product_home(request, category_slug=None):
                 'categories': categories,
                 'cart_product_form' : CartAddProductForm()
                } 
-    return render(request, "immoshop/home.html", context=context)
+    return render(request, "product/home.html", context=context)
 
 @login_required
 def product_immo_list(request, category_slug=None):
@@ -86,14 +88,14 @@ def product_immo_list(request, category_slug=None):
                 'categories': categories,
                 'cart_product_form' : CartAddProductForm()
                } 
-    return render(request, "immoshop/product_list.html", context=context)
+    return render(request, "product/product_list.html", context=context)
 
 def product_immo_detail(request, product_id, slug):
-    return render(request, "immoshop/product_detail.html", context={})
+    return render(request, "product/product_detail.html", context={})
 
 class ProductDetailView(DetailView): # new
     model = pro_models.Product
-    template_name = "immoshop/product_detail.html"
+    template_name = "product/product_detail.html"
     context_object_name = "product"
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:

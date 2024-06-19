@@ -11,13 +11,10 @@ from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicI
 from core.product import models as pro_models
 from core.product import admin as pro_admin
 from autocar import models as car_models
-
-
  
 """
 *** VEHICULE AUTO AUTO ***
 """
-
 class AutoSpecificationValueInline(StackedPolymorphicInline):
     class AutoSpecificationValueInline(StackedPolymorphicInline.Child):
         model = car_models.CarProductSpecificationValue
@@ -25,9 +22,22 @@ class AutoSpecificationValueInline(StackedPolymorphicInline):
     model = pro_models.ProductSpecificationValue
     child_inlines = (AutoSpecificationValueInline, )
 
+# Register your models here.
+class CarProductImageInline(StackedPolymorphicInline):
+    class AutoProductImageInline(StackedPolymorphicInline.Child):
+        model = car_models.CarProductImage
+        readonly_fields = ('thumbnail_path', 'large_path',)
+        fields = ('title', 'image',  )
+        extra = 0
+    
+    model = pro_models.ProductImage
+    child_inlines = ( AutoProductImageInline,)
+    readonly_fields = ('thumbnail_path', 'large_path',)
+
 @admin.register(car_models.VehiculeProduct)
 class AutoAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     #base_model = car_models.VehiculeProduct 
-    inlines = [AutoSpecificationValueInline, pro_admin.ProductImageInline, ]
-    list_display =  [field.name for field in car_models.VehiculeProduct._meta.get_fields()]
+    inlines = [AutoSpecificationValueInline, CarProductImageInline, ]
+    list_display = ['project', 'name', 'slug', 'price', 'stock', 'available', 'created_at', 'updated_at']
     
+admin.register(car_models.VehiculeProduct, AutoAdmin)

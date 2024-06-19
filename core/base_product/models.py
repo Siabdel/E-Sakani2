@@ -240,6 +240,7 @@ class BaseImage(PolymorphicModel):
 
     class Meta:
         abstract = True
+        
     def product_type(self):
         """
         Returns the polymorphic type of the product.

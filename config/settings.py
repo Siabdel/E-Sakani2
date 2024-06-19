@@ -21,8 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Directory project au meme niveau de settings.py
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-SHOP_APP_LABEL = 'immoshop'
-APP_LABEL = 'immoshop'
+SHOP_APP_LABEL = 'autocar'
+APP_LABEL = 'autocar'
 
 
 
@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'core.product', # Product
     'core.taxonomy', # new
     'core.profile',  # new
-    'core.orders', # Orders
     'core.shop', # Shop
     'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
@@ -75,9 +74,10 @@ INSTALLED_APPS = [
     #'markdownx', # <-- needed for adding markdown to forms
     # local app
     'mapwidgets', ## new google map
-    'immoshop.apps.ImmoShopConfig', # Immobilier
     "invoices",
     'customs', # custom
+    #'immoshop.apps.ImmoShopConfig', # Immobilier
+    #'core.orders', # Orders
     'autocar.apps.AutocarConfig', # Autocar
     
 ]
@@ -130,7 +130,9 @@ DATABASES = {
     }
 }
 
-CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
+#CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
+CART_PRODUCT_MODEL = 'autocar.VehiculeProduct'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

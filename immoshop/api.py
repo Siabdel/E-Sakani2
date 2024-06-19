@@ -16,14 +16,15 @@ from rest_framework import generics, permissions
 from django.shortcuts import get_object_or_404
 from immoshop import models as immo_models
 from immoshop import serializers as immo_seriz
+from django.contrib.auth.models import User
 
 
 # Residence
 class UserApiList(generics.ListCreateAPIView):
     serializer_class = immo_seriz.UserSerializer 
-    queryset = immo_models.User.objects.all().order_by('username')
+    queryset = User.objects.all().order_by('username')
 
 
 class UserApiDetail(generics.RetrieveUpdateAPIView):
     serializer_class = immo_seriz.UserSerializer 
-    queryset = immo_models.User.objects.all().order_by('username')
+    queryset = User.objects.all().order_by('username')

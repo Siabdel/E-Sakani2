@@ -40,7 +40,7 @@ class ProjectImagesInline(admin.TabularInline):
 @admin.register(proj_models.Project)
 class ProjectAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     #base_model = base_models.BaseProject
-    inlines = [ProjectImagesInline,  ]
+    inlines = [ProjectImagesInline, ProductInline, ]
     # list_display =  [field.name for field in proj_models.Project._meta.get_fields()]
     list_display =  ['title', 'slug', 'manager', 'start_date', 'visibilite', 'closed',  ]
     #exclude = ["author", "manager", ]

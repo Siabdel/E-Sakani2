@@ -14,11 +14,12 @@ from core.cart.cart import Cart
 from core.cart.forms import CartAddProductForm
 from core.utils import get_product_model
 from core.shop import models as sh_models
-from immoshop import models as pro_models
+from core.product import models as pro_models
+from autocar import models as car_models
 
-
-Product_model = get_product_model()
-_
+## on charge le master models 
+##Product_model = get_product_model()
+product_model = car_models.VehiculeProduct
 
 def cart_add_item(request, product_id):
     cart = Cart(request)  # create a new cart object passing it the request object 
@@ -53,7 +54,7 @@ def cart_detail(request):
     return render(request, 'cart/detail.html', {'cart': cart})
 
 class CartItemArticle(ListView): # new
-    model = pro_models.ImmoProduct
+    model = pro_models.Product
     template_name = "cart/detail.html"
     #context_object_name = "cart"
     
