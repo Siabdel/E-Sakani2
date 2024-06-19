@@ -29,12 +29,12 @@ urlpatterns = [
      # invoices
     path("custom/", include("customs.urls")),
     path("invoice/", include("invoices.urls")),
-    path('mfu/', include("core.mfilesupload.urls")),
     ## Projet Immobilier
-    #path('shop/', include('immoshop.urls'), name='shop_home'),
+    #path('immoshop/', include('immoshop.urls', 'immoshop'), name='immoshop'),
     ## Projet Concession Auto
-    path('car/', include('autocar.urls'), name='shop_car_home'),
-    #path('orders/', include('core.orders.urls')),
+    path('carshop/', include(('autocar.urls', 'carshop'), namespace='carshop')),
+    #path('orders/', include('core.orders.urls', 'orders'), namespace='orders'),
+    path('mfu/', include("core.mfilesupload.urls")),
 ] 
 # ... the rest of your URLconf goes here ...
 ## add static 

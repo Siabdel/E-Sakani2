@@ -51,9 +51,7 @@
         {% for product in produits_immo %}
             <ul class="list-group">
                 <li class="list-group-item"> 
-                    {% with url_name=app_name|add:":product_car_detail" %}
-                        <a href="{% url  url_name product.pk  %}"> {{ product }} </a> 
-                    {% endwith %}
+                    <a href="{% url 'immoshop:product_immo_detail' product.pk  %}"> {{ product }} </a> 
                 </li>
             </ul>
         {% endfor %}

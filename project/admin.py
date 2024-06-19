@@ -11,8 +11,10 @@ from project import models as proj_models
 from core.product import models as pro_models 
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
+from core.utils import get_product_model
 
-
+## load default product 
+Product_model = get_product_model()
 
 # Register your models here.
 ##
@@ -27,7 +29,7 @@ class CityAdmin(admin.ModelAdmin):
 
 
 class ProductInline(admin.TabularInline):
-    model = pro_models.Product
+    model = Product_model
     fields = ('name', 'slug', 'price','stock',)
     extra = 1
 

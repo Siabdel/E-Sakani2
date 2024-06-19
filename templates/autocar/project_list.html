@@ -9,8 +9,8 @@
         {% for project in projects %}
             <div class="col-lg-6 col-md-6 mb-4">
                 <div class="card h-100">
-                    {% with url_name=app_name|add:":product_car_detail" %}
-                    <a href="{% url url_name  project.pk %}">
+                    {% with url_name="'carshop:product_car_detail'" %}
+                    <a href="{% url url_name  project.id %}">
                         {% if project.default_image %}
                             <img class="card-img-top rounded-lg img-fluid mx-auto d-block" src="{{ project.default_image.url }}" alt="{{ project.default_image.url }}" style="height: 200px; width: 600px;">
                         {% endif %}
@@ -18,11 +18,9 @@
                     {% endwith %} 
                     <div class="card-body">
                         <h4 class="card-title">
-                    {% with url_name=app_name|add:":product_car_detail" %}
-                            <a href="{% url url_name project.pk %}">
+                            <a href="{% url 'immoshop:product_immo_detail' project.pk %}">
                                 {{ project.title | slice:"0:30" }}
                             </a>
-                    {% endwith %}
                         </h4>
                         <h5><p class="text-left">Prix à partir de : {{ project.price }} Euro</p></h5>
                         <p class="card-text">Description : {{ project.description | slice:"0:250" }}</p>

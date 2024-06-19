@@ -43,4 +43,5 @@ class ProductAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     #base_model = car_models.VehiculeProduct 
     inlines = [ProductSpecificationValueInline, ProductImageInline, ]
     list_display =  [field.name for field in pro_models.Product._meta.get_fields()]
+    prepopulated_fields = {'slug': ('name',), }
    

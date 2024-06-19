@@ -39,5 +39,6 @@ class AutoAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     #base_model = car_models.VehiculeProduct 
     inlines = [AutoSpecificationValueInline, CarProductImageInline, ]
     list_display = ['project', 'name', 'slug', 'price', 'stock', 'available', 'created_at', 'updated_at']
+    prepopulated_fields = {'slug': ('name',), }
     
 admin.register(car_models.VehiculeProduct, AutoAdmin)

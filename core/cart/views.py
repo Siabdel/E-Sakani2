@@ -18,8 +18,8 @@ from core.product import models as pro_models
 from autocar import models as car_models
 
 ## on charge le master models 
-##Product_model = get_product_model()
-product_model = car_models.VehiculeProduct
+Product_model = get_product_model()
+#product_model = car_models.VehiculeProduct
 
 def cart_add_item(request, product_id):
     cart = Cart(request)  # create a new cart object passing it the request object 
