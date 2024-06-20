@@ -156,8 +156,8 @@ class BaseProduct(PolymorphicModel,  metaclass=PolymorphicProductMetaclass):
         :returns: The cart item (of type CartItem) containing the product considered as equal to the
             current one, or ``None`` if no product matches in the cart.
         """
-        from shop.models.cart import CartItemModel
-        cart_item_qs = CartItemModel.objects.filter(cart=cart, product=self)
+        from core.shop import models as sh_models 
+        cart_item_qs = sh_models.ItemArticle.objects.filter(cart=cart, product=self)
         return cart_item_qs.first()
 
     def deduct_from_stock(self, quantity, **kwargs):

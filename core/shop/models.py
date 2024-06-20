@@ -13,6 +13,7 @@ from core.base_product import models as base_models
 from core.product import models as pro_models
 from core.base_shop import models as bshop_models
 from core import deferred
+from collections import OrderedDict
 
 # -----------------------------------------
 # -- Item CART (Panier d'articles en base) 
@@ -154,7 +155,8 @@ class BaseCartItem(models.Model, metaclass=deferred.ForeignKeyBuilder):
         auto_now=True,
     )
 
-    extra = models.JSONField(verbose_name=_("Arbitrary information for this cart item"))
+    extra = models.JSONField(verbose_name=_("Arbitrary information for this cart item"),
+                             null=True, blank=True)
 
     objects = CartItemManager()
 
@@ -210,5 +212,5 @@ CartItemModel = deferred.MaterializedModel(BaseCartItem)
 
 class ItemArticle(BaseCartItem):  
     quantity = models.IntegerField(verbose_name=_('quantity'))
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2, 
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, 
                                      verbose_name=_('unit price'))  

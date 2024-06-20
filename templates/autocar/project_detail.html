@@ -48,10 +48,10 @@
     </div>
     <!-- les produits du projet -->
     <div class="row">
-        {% for product in produits_immo %}
+        {% for product in produits_ %}
             <ul class="list-group">
                 <li class="list-group-item"> 
-                    <a href="{% url 'immoshop:product_immo_detail' product.pk  %}"> {{ product }} </a> 
+                    <a href="{% url 'shop:product_shop_detail' product.pk  %}"> {{ product }} </a> 
                 </li>
             </ul>
         {% endfor %}

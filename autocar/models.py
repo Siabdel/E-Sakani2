@@ -13,7 +13,7 @@ class VehiculeProduct(pro_models.Product):
         return self.images.all()
 
     def get_absolute_url(self):
-        return reverse("autocar:product_car_detail", args=[str(self.id)])
+        return reverse("carshop:product_car_detail", args=[str(self.id)])
 
     def __str__(self):
         return super().__str__()

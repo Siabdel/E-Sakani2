@@ -13,14 +13,15 @@ from core.product import models as pro_models
 from core.shop import models as msh_models 
 from core.taxonomy import models as tax_models
 from autocar import models as car_models
+from django.conf import settings
 
 # product Model setting
-#product_model = get_product_model()
-product_model = car_models.VehiculeProduct
+product_model = get_product_model()
+#product_model = car_models.VehiculeProduct
 
 def category_list(request, categoy_slug=None ):
     category = get_object_or_404(pro_models.MPCategory, slug=categoy_slug)
-    products = pro_models.ImmoProduct.objects.filter(
+    products = pro_models.Product.objects.filter(
         category__in = pro_models.MPCategory.objects
         .get(name=categoy_slug).get_descendants(include_self=False)
     )
@@ -31,7 +32,7 @@ def category_list(request, categoy_slug=None ):
     return render(request, "product/category_list.html", context=context)
     
 
-def product_list(request, category_slug=None):
+def product_shop_ist(request, category_slug=None):
     category = None
     categories = pro_models.MPCategory.objects.all()
     products = pro_models.Product.objects.filter(available=True)
@@ -46,7 +47,7 @@ def product_list(request, category_slug=None):
     }
     return render(request, "product/product_detail.html", context=pro_context)
 
-def product_home(request, category_slug=None):
+def product_shop_home(request, category_slug=None):
     products_list = product_model.objects.all()
     category = None
     categories = pro_models.MPCategory.objects.all()
@@ -75,7 +76,7 @@ def product_home(request, category_slug=None):
     return render(request, "product/home.html", context=context)
 
 @login_required
-def product_immo_list(request, category_slug=None):
+def product_shop_list(request, category_slug=None):
     products_list = product_model.objects.all()
     category = None
     categories = pro_models.MPCategory.objects.all()
@@ -90,7 +91,7 @@ def product_immo_list(request, category_slug=None):
                } 
     return render(request, "product/product_list.html", context=context)
 
-def product_immo_detail(request, product_id, slug):
+def product_shop_detail(request, product_id, slug):
     return render(request, "product/product_detail.html", context={})
 
 class ProductDetailView(DetailView): # new
@@ -124,7 +125,8 @@ class ProductDetailView(DetailView): # new
             'product':  product,
             'product_images' : product_images,
             'image' : product_images.first(),
-            'cart_product_form': cart_product_form
+            'cart_product_form': cart_product_form,
+            'app_name' : 'carshop',
         }
       
         return context

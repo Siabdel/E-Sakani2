@@ -1,4 +1,4 @@
-{% extends "immoshop/base_shop.html" %}
+{% extends "product/base_shop.html" %}
 {% load static i18n %}
 {% load crispy_forms_tags %}
 
@@ -21,7 +21,7 @@
               </div>
               <div class="card-body">
                   <h5 class="card-title">
-                    <a href="{% url 'immoshop:product_immo_detail' product.pk %}">{{ product.name | slice:"0:30" }}</a>
+                    <a href="{% url 'shop:product_shop_detail' product.pk %}">{{ product.name | slice:"0:30" }}</a>
                   </h5>
                   <div class="card-text">
                       <p class="lead">

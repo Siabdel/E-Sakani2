@@ -10,7 +10,6 @@ from core.utils import get_product_model, Dict2Obj
 from project import models as proj_models
 from django.conf import settings
 
-
 class ProjectListView(ListView):
     template_name = "project/project_list.html"
     model = proj_models.Project
