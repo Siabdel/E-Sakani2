@@ -1,5 +1,5 @@
 from django.db import models
-from core.product import models as pro_models
+from product import models as pro_models
 
 class Order(models.Model):
     first_name = models.CharField(max_length=60)

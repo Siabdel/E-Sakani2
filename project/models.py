@@ -5,12 +5,9 @@ from django.urls import reverse, resolve
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from core.taxonomy import models as tax_models
 from core.base_product import models as base_models
-from core.taxonomy import models as core_models
 from polymorphic.models import PolymorphicModel, PolymorphicManager
 from mptt.models import MPTTModel, TreeForeignKey
-from core.profile.models import UProfile
 from core.profile.models import Societe
 from core.taxonomy.models import TaggedItem, MPCategory
 # from mapwidgets.widgets import GooglePointField

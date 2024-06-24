@@ -14,7 +14,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
-from core.shop import models as msh_models
+from shop import models as msh_models
 from weasyprint import HTML
 from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser

@@ -8,7 +8,7 @@ from django.contrib import admin
 from  mptt.admin  import MPTTModelAdmin
 # Register your models here.
 from project import models as proj_models 
-from core.product import models as pro_models 
+from product import models as pro_models 
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 from core.utils import get_product_model

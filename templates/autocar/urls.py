@@ -8,7 +8,7 @@ from django.views.generic import (
     UpdateView,
 )
 from weasyprint import HTML
-from core.shop import views as shop_models 
+from shop import views as shop_models 
 
 
 app_name = 'carshop'  # Ceci définit l'espace de noms pour l'application

@@ -6,8 +6,8 @@ from django.conf import settings
 from django.contrib import messages
 from decimal import Decimal
 from django.contrib.auth.models import User, AnonymousUser
-from core.product import models as pro_models
-from core.shop import models as sh_models
+from product import models as pro_models
+from shop import models as sh_models
 from core.utils import get_product_model
 from django.contrib.contenttypes.models import ContentType
 

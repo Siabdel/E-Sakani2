@@ -7,55 +7,44 @@
 
 {% block content %}
 <div class="container bg-light">
-    <div id="projectCarousel" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators">
-            {% for image in project_images %}
-                <li data-target="#projectCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
-            {% endfor %}
-        </ol>
-        <div class="carousel-inner">
-            {% for image in project_images %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img class="d-block w-100" src="{{ image.image.url }}" alt="{{ project.title }}">
-                </div>
-            {% endfor %}
-        </div>
-        <a class="carousel-control-prev" href="#projectCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#projectCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-
+    <h3 class="mb-4">Projects and Products</h3>
     <div class="breadcrumb"> <h2 class="text-center"> {{ project.title }} </h2> </div>
     
     <div class="row mt-3">
-        <div class="col-md-6">
-            <img src="{{ project.default_image.url }}" class="img-fluid" alt="{{ project.title }}">
+        <div class="col-md-12">
+            <img src="{{ project.default_image.url }}" class="img-fluid" width="80%%"
+                alt="{{ project.title }}">
         </div>
         <div class="col-md-6">
             <h2> <a href="#"> {{ project.title }}  </a> </h2>
             <p>{{ project.description }}</p>
-            <h2>  Plan   </h2>
              <div class="map-container">
                 <!--  product.location|gis_map:"map_widgets/google.html"  -->
             </div>
-            <h2> <a href="#"> Appartements product </a>  </h2>
         </div>
     </div>
+    <hr/>
     <!-- les produits du projet -->
+    
     <div class="row">
-        {% for product in produits_immo %}
-            <ul class="list-group">
-                <li class="list-group-item"> 
-                    {% with url_name=app_name|add:":product_car_detail" %}
-                        <a href="{% url  url_name product.pk  %}"> {{ product }} </a> 
-                    {% endwith %}
-                </li>
-            </ul>
+        {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        {% with url_name=app_name|add:":product_car_detail" %}
+                            <a href="{% url  url_name product.pk  %}"> 
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description }}</p>
+                                <p class="card-text"><strong>Price: </strong>${{ product.price }}</p>
+                                {% if product.default_image %}
+                                    <img class="card-img-top img-fluid" src="{{ product.default_image.url }}" alt="{{ product.name }}">
+                                {% endif %}
+                            </a>
+                        {% endwith %}
+                        <a href="{% url 'cart:cart_add_item' product.id %}" class="btn btn-primary mt-3">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
     </div>
 </div>

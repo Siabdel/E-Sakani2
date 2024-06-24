@@ -24,15 +24,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('project.urls'), name='home'),
-    path('sh/', include('core.shop.urls'), name='sh_home'),
-    path('cart/', include('core.cart.urls')),
-     # invoices
+    #path('sh/', include('shop.urls'), name='sh_home'),
+    #path('cart/', include('core.cart.urls')),
     path("custom/", include("customs.urls")),
-    path("invoice/", include("invoices.urls")),
+    # invoices
+    #path("invoice/", include("invoices.urls")),
     ## Projet Immobilier
     #path('immoshop/', include('immoshop.urls', 'immoshop'), name='immoshop'),
     ## Projet Concession Auto
-    path('carshop/', include(('autocar.urls', 'carshop'), namespace='carshop')),
+    #path('carshop/', include(('autocar.urls', 'carshop'), namespace='carshop')),
     #path('orders/', include('core.orders.urls', 'orders'), namespace='orders'),
     path('mfu/', include("core.mfilesupload.urls")),
 ] 

@@ -21,10 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Directory project au meme niveau de settings.py
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-SHOP_APP_LABEL = 'autocar'
-APP_LABEL = 'autocar'
-
-
+SHOP_APP_LABEL = 'shop'
+APP_LABEL = 'shop'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -42,17 +40,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
-    'mptt',
-    'core.product', # Product
     'core.taxonomy', # new
     'core.profile',  # new
-    'core.shop', # Shop
+    'project.apps.ProjectConfig', # new
     'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
     #'core.custom_accounts.apps.AccountsConfig',
-    'project', # new
     'polymorphic',
-    
+    'mptt',
+    # django contrib 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,14 +67,16 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "django_extensions",
+    'mapwidgets', ## new google map
     #'markdownx', # <-- needed for adding markdown to forms
     # local app
-    'mapwidgets', ## new google map
-    "invoices",
+    #"invoices",
     'customs', # custom
     #'immoshop.apps.ImmoShopConfig', # Immobilier
     #'core.orders', # Orders
-    'autocar.apps.AutocarConfig', # Autocar
+    #'autocar.apps.AutoCarConfig', # Autocar
+    'product.apps.ProductConfig', # Product
+    'shop.apps.ShopConfig', # Shop
     
 ]
 
@@ -122,16 +120,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'esakanidb',
+        'USER': 'postgres',
+        'PASSWORD': 'grutil001',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+##
+CART_PRODUCT_MODEL = 'product.Product'
 #CART_PRODUCT_MODEL = 'immoshop.ImmoProduct'
-CART_PRODUCT_MODEL = 'autocar.VehiculeProduct'
+#CART_PRODUCT_MODEL = 'autocar.VehiculeProduct'
+
 
 
 # Password validation

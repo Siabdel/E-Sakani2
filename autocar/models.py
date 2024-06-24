@@ -3,7 +3,7 @@ from django.db import models
 from typing import Any, MutableMapping
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from core.product import models as pro_models
+from product import models as pro_models
 
 # Create your models here.
 class VehiculeProduct(pro_models.Product):

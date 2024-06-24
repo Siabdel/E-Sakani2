@@ -13,17 +13,16 @@ from django.contrib import messages
 from core.cart.cart import Cart
 from core.cart.forms import CartAddProductForm
 from core.utils import get_product_model
-from core.shop import models as sh_models
-from core.product import models as pro_models
-from autocar import models as car_models
+from shop import models as sh_models
+from product import models as pro_models
 
 ## on charge le master models 
-Product_model = get_product_model()
-#product_model = car_models.VehiculeProduct
+#product_model = get_product_model()
+product_model = pro_models.Product
 
 def cart_add_item(request, product_id):
     cart = Cart(request)  # create a new cart object passing it the request object 
-    product = get_object_or_404(Product_model, id=product_id) 
+    product = get_object_or_404(product_model, id=product_id) 
     cart.add(product=product,)
     return redirect('cart:cart_detail')
 

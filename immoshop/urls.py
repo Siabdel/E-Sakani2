@@ -8,7 +8,7 @@ from django.views.generic import (
     UpdateView,
 )
 from weasyprint import HTML
-from core.shop import views as shop_models 
+from shop import views as shop_models 
 from immoshop import api as shop_apiviews
 from immoshop import api as shop_api
 from immoshop import views as immo_views

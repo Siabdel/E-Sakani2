@@ -30,8 +30,8 @@ from django.views import View
 ## local app modules
 from weasyprint import HTML
 from core.orders.models import OrderItem
-from core.product import models as pro_models
-from core.shop import models as sh_models 
+from product import models as pro_models
+from shop import models as sh_models 
 from customs import models as cu_models 
 from immoshop import models as immo_models
 from invoices import models as devis_models

@@ -6,8 +6,8 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from core.product import models as pro_models
-from core.shop import models as sh_models
+from product import models as pro_models
+from shop import models as sh_models
 from immoshop import models as immo_models 
 from core.base_product import models as base_models
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter

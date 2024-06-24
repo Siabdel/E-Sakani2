@@ -6,10 +6,6 @@ from io import BytesIO
 from django.core.files import File
 from django.conf import settings
 from django.apps import apps
-## Local
-from core.product import models as pro_models
-
-
 class Dict2Obj(object):
     """
     Turns a dictionary into a class
@@ -60,8 +56,14 @@ def make_thumbnail(image, size=(100, 100)):
 
 ##  
 def get_product_model():
-    product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', "core.product.Product")
-    app_label, model_name = product_model_string.split('.')
+    product_model_string = getattr(settings, 'CART_PRODUCT_MODEL', "Product")
+    nb = len(product_model_string.split('.'))
+
+    if nb == 2:
+        app_label, model_name = product_model_string.split('.')
+    elif nb == 3 :
+        core, app_label, model_name = product_model_string.split('.')
+
     model = apps.get_model(app_label, model_name)
     if model is None:
         raise LookupError(f"App '{app_label}' doesn't have a '{model_name}' model.")

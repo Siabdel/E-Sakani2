@@ -24,6 +24,7 @@ class PolymorphicProductMetaclass(deferred.PolymorphicForeignKeyBuilder):
             msg = "Class `{}.objects` must provide ModelManager inheriting from BaseProductManager"
             raise NotImplementedError(msg.format(Model.__name__))
 
+        
         if not isinstance(getattr(Model, 'lookup_fields', None), (list, tuple)):
             msg = "Class `{}` must provide a tuple of `lookup_fields` so that we can easily lookup for Products"
             raise NotImplementedError(msg.format(Model.__name__))
@@ -35,7 +36,7 @@ class PolymorphicProductMetaclass(deferred.PolymorphicForeignKeyBuilder):
 class BaseProductManager(PolymorphicManager):
     def get_queryset(self):
         return super(BaseProductManager, self).get_queryset().filter(is_active=True)
-class BaseProduct(PolymorphicModel,  metaclass=PolymorphicProductMetaclass):
+class BaseProduct(PolymorphicModel, ):
     category = deferred.ForeignKey(MPCategory, related_name='products', null=True, blank=True, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100, db_index=True)
@@ -156,7 +157,7 @@ class BaseProduct(PolymorphicModel,  metaclass=PolymorphicProductMetaclass):
         :returns: The cart item (of type CartItem) containing the product considered as equal to the
             current one, or ``None`` if no product matches in the cart.
         """
-        from core.shop import models as sh_models 
+        from shop import models as sh_models 
         cart_item_qs = sh_models.ItemArticle.objects.filter(cart=cart, product=self)
         return cart_item_qs.first()
 

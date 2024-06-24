@@ -1,0 +1,149 @@
+.
+├── autocar
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── config
+│   ├── __init__.py
+│   ├── projects.py
+│   ├── __pycache__
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── core
+│   ├── addressing
+│   ├── base_product
+│   ├── base_shop
+│   ├── cart
+│   ├── deferred.py
+│   ├── fields.py
+│   ├── forms
+│   ├── __init__.py
+│   ├── mfilesupload
+│   ├── models
+│   ├── orders
+│   ├── profile
+│   ├── __pycache__
+│   ├── signals.py
+│   ├── taxonomy
+│   └── utils
+├── customs
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── data
+│   ├── db.sqlite3
+│   ├── export.sh
+│   ├── import.sh
+│   ├── migrate.sh
+│   ├── products.json
+│   └── project.json
+├── E-sakani.code-workspace
+├── immoshop
+│   ├── admin.py
+│   ├── api.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── serializers.py
+│   ├── shop
+│   ├── signals.py
+│   ├── static
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── invoices
+│   ├── admin.py
+│   ├── api_views.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── frent-end
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── serializers.py
+│   ├── signals.py
+│   ├── static
+│   ├── templates
+│   ├── tests
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── media
+│   ├── images
+│   └── upload
+├── migrate.sh
+├── product
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   └── views.py
+├── project
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── pytest.ini
+├── README.md
+├── requirements.txt
+├── shop
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── __pycache__
+│   ├── signals.py
+│   ├── static
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── static
+│   ├── admin
+│   ├── css
+│   ├── dist
+│   ├── images
+│   ├── img
+│   ├── js
+│   ├── mapwidgets
+│   ├── media
+│   ├── MFU_Images
+│   ├── mptt
+│   ├── polymorphic
+│   ├── product_images
+│   ├── scss
+│   └── upload
+├── staticfiles
+├── templates
+│   ├── autocar
+│   ├── cart
+│   ├── immoshop__
+│   ├── msfilesupload
+│   ├── orders
+│   ├── product
+│   ├── project
+│   └── shop
+└── tree_project.lst
+
+65 directories, 81 files

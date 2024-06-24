@@ -8,8 +8,8 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
-from core.product import models as pro_models
-from core.product import admin as pro_admin
+from product import models as pro_models
+from product import admin as pro_admin
 from autocar import models as car_models
  
 """
