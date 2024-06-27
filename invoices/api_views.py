@@ -1,15 +1,15 @@
 
 # views.py
 from rest_framework import generics
-from .models import Custom, Invoice, InvoiceItem
+from .models import Customer, Invoice, InvoiceItem
 from .serializers import ClientSerializer, InvoiceSerializer, InvoiceItemSerializer
 
 class ClientListView(generics.ListCreateAPIView):
-    queryset = Custom.objects.all()
+    queryset = Customer.objects.all()
     serializer_class = ClientSerializer
 
 class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Custom.objects.all()
+    queryset = Customer.objects.all()
     serializer_class = ClientSerializer
 
 class InvoiceListView(generics.ListCreateAPIView):

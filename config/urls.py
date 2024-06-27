@@ -21,14 +21,14 @@ from django.conf.urls.static import static
 app_name = 'config'
 
 urlpatterns = [
+    path('', include('project.urls'), name='home'),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('', include('project.urls'), name='home'),
-    #path('sh/', include('shop.urls'), name='sh_home'),
-    #path('cart/', include('core.cart.urls')),
-    path("custom/", include("customs.urls")),
+    path('sh/', include('shop.urls'), name='sh_home'),
+    path('cart/', include('core.cart.urls')),
+    path("client/", include("customer.urls")),
     # invoices
-    #path("invoice/", include("invoices.urls")),
+    path("invoice/", include("invoices.urls")),
     ## Projet Immobilier
     #path('immoshop/', include('immoshop.urls', 'immoshop'), name='immoshop'),
     ## Projet Concession Auto

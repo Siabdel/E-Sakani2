@@ -4,12 +4,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserChangeForm, CustomCreatForm
 from .models import CustomUser
-from customs import models as acc_models
+from customer import models as acc_models
 
 # admin.site.register(User, UserAdmin)
 
 # Register your models here.
-@admin.register(acc_models.Custom)
+@admin.register(acc_models.Customer)
 class AccountsAdmin(admin.ModelAdmin):
     list_display  = [f.name for f in acc_models.CustomUser._meta.get_fields()]
     list_display =  ('email', 'first_name', 'last_name', 'company',

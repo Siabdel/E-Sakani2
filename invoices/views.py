@@ -21,7 +21,7 @@ from django.views.generic import (
 from weasyprint import HTML
 
 from .forms import InvoiceCreateForm, InvoiceEditForm, ClientCreateForm
-from .models import Custom, Invoice, InvoiceItem
+from .models import Customer, Invoice, InvoiceItem
 from django.contrib import messages
 
 InvoiceItemsFormset = inlineformset_factory(
@@ -176,7 +176,7 @@ class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
-    model = Custom
+    model = Customer
     template_name = "new_client.html"
     form_class = ClientCreateForm
     
@@ -202,9 +202,9 @@ class ClientListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(created_by=self.request.user)
+            return Customer.objects.filter(created_by=self.request.user)
         else:
-            return Custom.objects.none()
+            return Customer.objects.none()
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
@@ -216,9 +216,9 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(user=self.request.user)
+            return Customer.objects.filter(user=self.request.user)
         else:
-            return Custom.objects.none()
+            return Customer.objects.none()
 
     def get_invoices_set(self):
         if self.request.user.is_authenticated:
@@ -236,7 +236,7 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "edit_client.html"
     context_object_name = 'client'
-    model = Custom
+    model = Customer
 
     fields = [
         "first_name",
@@ -251,9 +251,9 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(user=self.request.user)
+            return Customer.objects.filter(user=self.request.user)
         else:
-            return Custom.objects.none()
+            return Customer.objects.none()
     def post(self, request,  *args, **kwargs):
         form = self.form_class()
         return render(request, context={'form':form})
@@ -266,9 +266,9 @@ class ClientDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Custom.objects.filter(created_by=self.request.user)
+            return Customer.objects.filter(created_by=self.request.user)
         else:
-            return Custom.objects.none()
+            return Customer.objects.none()
 
 
 @login_required

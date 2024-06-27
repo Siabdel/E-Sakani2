@@ -27,7 +27,7 @@ class Product(base_models.BaseProduct):
         return self.images.all()
 
     def get_absolute_url(self):
-        return reverse("shop:product_car_detail", args=[str(self.id)])
+        return reverse("shop:product_detail", args=[str(self.id)])
 
     def product_type(self):
         return "product"

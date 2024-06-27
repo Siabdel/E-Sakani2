@@ -4,7 +4,7 @@ rm db.sqlite3
 find . -name migrations -exec rm -r {} ;
 ### makemigrate 
 #./manage.py makemigrations profile taxonomy product cart shop orders immoshop autocar customs invoices project profile
-./manage.py makemigrations profile taxonomy product customs project profile
+./manage.py makemigrations profile taxonomy product shop customer project profile
 ## migrate 
 #./manage.py migrate
 ##

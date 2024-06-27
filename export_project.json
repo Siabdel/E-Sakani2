@@ -1,0 +1,40 @@
+[
+{
+  "model": "project.project",
+  "pk": 1,
+  "fields": {
+    "polymorphic_ctype": 19,
+    "title": "Concession Automobile Lyon Sud",
+    "slug": "concession-automobile-lyon-sud",
+    "description": "",
+    "author": null,
+    "manager": 1,
+    "status": "OPEN",
+    "visibilite": "P",
+    "created": "2024-06-26T22:44:17.565",
+    "due_date": "2024-06-26T22:43:12",
+    "start_date": "2024-06-26T22:42:13",
+    "end_date": "2024-06-26T22:43:15",
+    "comment": "",
+    "default_image": "upload/product_images/2024/06/Concession-automobile-Slider-FR_GR9p9dn.jpg",
+    "societe": 1,
+    "category": null,
+    "lon": 11.9,
+    "lat": 12.10033
+  }
+},
+{
+  "model": "project.projectimage",
+  "pk": 1,
+  "fields": {
+    "polymorphic_ctype": 20,
+    "title": null,
+    "slug": null,
+    "image": "upload/product_images/2024/06/téléchargement.jpeg",
+    "thumbnail_path": null,
+    "large_path": null,
+    "created_at": "2024-06-26T22:44:17.589",
+    "project": 1
+  }
+}
+]

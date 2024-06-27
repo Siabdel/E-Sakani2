@@ -3,13 +3,13 @@ from django.db import models
 from django.db.models import Sum, F
 from django.urls import reverse
 from phonenumber_field.modelfields import PhoneNumberField
-from customs.models import Custom
+from customer.models import Customer
 
 
 class Invoice(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey( get_user_model(), on_delete=models.CASCADE,)
-    client = models.ForeignKey(Custom, on_delete=models.CASCADE)
+    client = models.ForeignKey(Customer, on_delete=models.CASCADE)
     invoice_total = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, editable=False, default=0
     )
@@ -44,11 +44,7 @@ class Invoice(models.Model):
 
 class InvoiceItem(models.Model):
     # Invoice Line Items
-    # https://stackoverflow.com/questions/16252035/django-assigning-a-foreign-key-of-class-that-hasnt-been-created-yet
-    invoice = models.ForeignKey(
-        "Invoice", related_name="items", on_delete=models.CASCADE
-    )
-
+    invoice = models.ForeignKey("Invoice", related_name="items", on_delete=models.CASCADE)
     item = models.CharField(max_length=200)
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=6, decimal_places=2)

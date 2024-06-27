@@ -104,7 +104,7 @@ class ProductDetailView(DetailView): # new
         cart_product_form = CartAddProductForm()
         # Récupérer les images associées à ce produit en utilisant la méthode que nous avons définie dans le modèle
         product = self.get_object()
-        product_images = product.images.all()
+        product_images = product.get_images()
         # les psecifications du produit 
         ## raise Exception("options = ", product.options)
 

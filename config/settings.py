@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'project.apps.ProjectConfig', # new
     'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
-    #'core.custom_accounts.apps.AccountsConfig',
     'polymorphic',
     'mptt',
     # django contrib 
@@ -70,8 +69,8 @@ INSTALLED_APPS = [
     'mapwidgets', ## new google map
     #'markdownx', # <-- needed for adding markdown to forms
     # local app
-    #"invoices",
-    'customs', # custom
+    "invoices",
+    'customer', # customer
     #'immoshop.apps.ImmoShopConfig', # Immobilier
     #'core.orders', # Orders
     #'autocar.apps.AutoCarConfig', # Autocar
