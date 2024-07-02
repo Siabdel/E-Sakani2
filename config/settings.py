@@ -40,10 +40,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
+    'core', # ne
     'core.taxonomy', # new
     'core.profile',  # new
     'project.apps.ProjectConfig', # new
-    'core.cart', # Cart
+    #'core.cart', # Cart
     'core.mfilesupload', # Multi files upload
     'polymorphic',
     'mptt',
@@ -54,7 +55,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 3rd-party apps
     'rest_framework', # new
+    'rest_framework.authtoken',
+    "dj_rest_auth",
     # debug tools
     'debug_toolbar', # new
     'corsheaders', 
@@ -69,7 +73,7 @@ INSTALLED_APPS = [
     'mapwidgets', ## new google map
     #'markdownx', # <-- needed for adding markdown to forms
     # local app
-    "invoices",
+    #"invoices",
     'customer', # customer
     #'immoshop.apps.ImmoShopConfig', # Immobilier
     #'core.orders', # Orders
@@ -90,6 +94,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Add the account middleware:
     "allauth.account.middleware.AccountMiddleware",
+    # Custumer
+    'core.middleware.CustomerMiddleware',
     # debug 
     'debug_toolbar.middleware.DebugToolbarMiddleware', # new
 ]
@@ -107,7 +113,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.cart.context_processors.cart', ## new
+                'core.context_processors.shop_settings', ## new
+                'core.context_processors.customer', ## new
             ],
         },
     },
@@ -294,3 +301,7 @@ CACHES = {
         }
     }
 }
+
+# Django shop
+SHOP_LINK_TO_EMPTY_CART = '/cart/empty/'
+LINK_TO_EMPTY_CART = '/cart/empty/'

@@ -21,11 +21,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 from core.orders.models import OrderItem
 from core.orders.forms import OrderCreateForm
-from core.cart.cart import Cart
+from shop.models import ShopCart
 
 
 def order_create_session(request):
-    cart = Cart(request)
+    cart = ShopCart(request)
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)
         if form.is_valid():
@@ -77,7 +77,7 @@ def generate_pdf_invoice(request, invoice_id):
     return response
 
 def order_create(request):
-    cart = Cart(request) 
+    cart = ShopCart(request) 
     cart_id = request.session[settings.CART_SESSION_ID]
     #raise Exception(f" cart={cart}, card_id={cart_id}")
     

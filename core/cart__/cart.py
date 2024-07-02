@@ -51,7 +51,7 @@ class Cart(object):
         messages.add_message(self.request, messages.INFO,
                              f"item quantite={product.price} updatea= {update_quantity}"  )
         try :
-            item = sh_models.ItemArticle.objects.get(
+            item = sh_models.CartItem.objects.get(
                                             cart=self.cart, 
                                             product=product,
                                             )
@@ -63,7 +63,7 @@ class Cart(object):
             item.save()
         
         except Exception as err:
-            item, created = sh_models.ItemArticle.objects.get_or_create(
+            item, created = sh_models.CartItem.objects.get_or_create(
                                     cart=self.cart,
                                     product=product,
                                     quantity=quantity,
@@ -77,7 +77,7 @@ class Cart(object):
 
     def remove(self, product):
         # dell 
-        return sh_models.ItemArticle.objects.get(cart=self.cart, object_id=product.id).delete()
+        return sh_models.CartItem.objects.get(cart=self.cart, object_id=product.id).delete()
 
     def __iter_old_(self):
         product_ids = self.cart.keys()

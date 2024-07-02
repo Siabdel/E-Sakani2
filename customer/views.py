@@ -4,11 +4,10 @@ from django.contrib.auth.models import AnonymousUser
 from django.views.generic import CreateView 
 from customer.forms import AccountUserCreationForm, CustomFormSet
 from django.db import transaction   
-from core.cart.cart import Cart
+from shop.models import ShopCart
 from django.conf import settings
 from shop import models as sh_models
 from customer import models as cli_models
-from invoices import models as inv_models
 
 
 class CustomCreate(CreateView):
@@ -70,33 +69,7 @@ class CustomCreate(CreateView):
         ##context['currentStep'] = 2
         return self.render_to_response(context)
     
-    def create_invoice(self, custom): 
-        # cart 
-        cart = Cart(self.request) 
-        cart_id = self.request.session[settings.CART_SESSION_ID]
-        shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
-
-        # 1- create invoice + ItemInvoice
-        ## raise Exception("Customer.instance = ", custom.get('email'))
-        email_client =  custom.get('email')
-        client_obj = cli_models.Customer.objects.get(email=email_client)
-        devis = inv_models.Invoice(title="Mon devis test", 
-                                        author = self.request.user,
-                                        client = client_obj, 
-                                        invoice_total = 100,
-                                        )
-        items = shop_cart.item_articles.all()
-        for item in items:
-            article = item.content_type
-            inv_models.InvoiceItem.objects.create(
-                invoice = devis,
-                item = article, 
-                quantity = item.quantity,
-                price = article.unit_price,
-                rate = 12,
-        )
-
-
+    
 class SignUp(CreateView):
     form_class = AccountUserCreationForm
     success_url = reverse_lazy("login")
@@ -187,3 +160,32 @@ class CustomCreate(CreateView):
                 price = article.unit_price,
                 rate = 12,
         )
+
+"""
+def create_invoice(self, custom): 
+        # cart 
+        cart = Cart(self.request) 
+        cart_id = self.request.session[settings.CART_SESSION_ID]
+        shop_cart = sh_models.ShopCart.objects.get(id=cart_id)
+
+        # 1- create invoice + ItemInvoice
+        ## raise Exception("Customer.instance = ", custom.get('email'))
+        email_client =  custom.get('email')
+        client_obj = cli_models.Customer.objects.get(email=email_client)
+        devis = inv_models.Invoice(title="Mon devis test", 
+                                        author = self.request.user,
+                                        client = client_obj, 
+                                        invoice_total = 100,
+                                        )
+        items = shop_cart.item_articles.all()
+        for item in items:
+            article = item.content_type
+            inv_models.InvoiceItem.objects.create(
+                invoice = devis,
+                item = article, 
+                quantity = item.quantity,
+                price = article.unit_price,
+                rate = 12,
+        )
+"""
+

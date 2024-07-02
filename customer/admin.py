@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserChangeForm, CustomCreatForm
-from .models import CustomUser
 from customer import models as acc_models
 
 # admin.site.register(User, UserAdmin)
@@ -11,7 +10,7 @@ from customer import models as acc_models
 # Register your models here.
 @admin.register(acc_models.Customer)
 class AccountsAdmin(admin.ModelAdmin):
-    list_display  = [f.name for f in acc_models.CustomUser._meta.get_fields()]
+    list_display  = [f.name for f in acc_models.Customer._meta.get_fields()]
     list_display =  ('email', 'first_name', 'last_name', 'company',
                   'address1', 'address2', 'country', 'phone_number',  )
     fieldsets = (
@@ -44,7 +43,7 @@ class AccountsAdmin(admin.ModelAdmin):
 class CustomUserAdmin(UserAdmin):
     add_form = CustomCreatForm
     form = CustomUserChangeForm
-    model = CustomUser
+    model = acc_models.Customer
     list_display = ["first_name", "last_name", "email", "country", ]
 
     fieldsets = (
@@ -83,4 +82,4 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-## admin.site.register(CustomUser, CustomUserAdmin) 
+## admin.site.register(Customer, CustomUserAdmin) 

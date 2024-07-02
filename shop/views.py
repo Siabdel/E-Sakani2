@@ -6,92 +6,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, CreateView
 from core.utils import get_product_model, Dict2Obj
-from core.cart.forms import CartAddProductForm
 from product import models as pro_models
 from shop import models as msh_models 
 from product import models as pro_models
 from django.conf import settings
+from .forms import CartAddProductForm
+from .models import ShopCart
 
 # product Model setting
 product_model = get_product_model()
-
-def category_list(request, categoy_slug=None ):
-    category = get_object_or_404(pro_models.MPCategory, slug=categoy_slug)
-    products = pro_models.Product.objects.filter(
-        category__in = pro_models.MPCategory.objects
-        .get(name=categoy_slug).get_descendants(include_self=False)
-    )
-    context = {
-            "categoy": category,
-            "products": products,
-            }
-    return render(request, "product/category_list.html", context=context)
-    
-
-def product_shop_ist(request, category_slug=None):
-    category = None
-    categories = pro_models.MPCategory.objects.all()
-    products = pro_models.Product.objects.filter(available=True)
-    if category_slug:
-        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
-        products = pro_models.Product.objects.filter(category=category)
-
-    pro_context = {
-        'category': category,
-        'categories': categories,
-        'products': products
-    }
-    return render(request, "product/product_detail.html", context=pro_context)
-
-def product_shop_home(request, category_slug=None):
-    products_list = product_model.objects.all()
-    category = None
-    categories = pro_models.MPCategory.objects.all()
-    #
-    if category_slug:
-        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
-    
-    # ProductSpecificationValues
-    for product in products_list:
-        options = [] 
-        psv = pro_models.ProductSpecificationValue.objects.filter(product=product)
-        for spec in psv:
-            attributes = {"product": spec.product.id,
-                       "name": spec.specification.name,
-                       "value": spec.value,
-                    }
-            options.append(Dict2Obj(attributes))
-        ## add options
-        product.options = options
-    
-    context = { 'products' : products_list,
-                'category': category,
-                'categories': categories,
-                'cart_product_form' : CartAddProductForm()
-               } 
-    return render(request, "product/home.html", context=context)
-
-@login_required
-def product_shop_list(request, category_slug=None):
-    products_list = product_model.objects.all()
-    category = None
-    categories = pro_models.MPCategory.objects.all()
-    #
-    if category_slug:
-        category = get_object_or_404(pro_models.MPCategory, slug=category_slug)
-    
-    context = { 'products' : products_list,
-                'category': category,
-                'categories': categories,
-                'cart_product_form' : CartAddProductForm()
-               } 
-    return render(request, "product/product_list.html", context=context)
-
-def product_shop_detail(request, product_id, slug):
-    return render(request, "product/product_detail.html", context={})
-
 class ProductDetailView(DetailView): # new
     model = pro_models.Product
     template_name = "product/product_detail.html"
@@ -128,40 +53,39 @@ class ProductDetailView(DetailView): # new
         }
       
         return context
-
-def order_create(request):
-    cart = Cart(request) 
-    cart_id = request.session[settings.CART_SESSION_ID]
-    #raise Exception(f" cart={cart}, card_id={cart_id}")
     
-    shop_cart = msh_models.ShopCart.objects.get(id=cart_id)
-    items = shop_cart.item_articles.all()
+def cart_add_one_item(request, product_id):
+    cart = ShopCart.objects.get_or_create_cart(request.user)  # create a new cart object passing it the request object 
+    product = get_object_or_404(product_model, id=product_id) 
+    #raise Exception("j'ai panier et produit")
+    cart.add_product(product=product,)
+    return redirect('cart:cart_detail')
     
-    if request.method == 'POST':
-        form = OrderCreateForm(request.POST)
-        if form.is_valid():
-            order = form.save()
-            for item in items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    price=item.product.price,
-                    quantity=item.quantity
-                )
-            # vider le panier 
-            cart.clear()
-        return render(request, 'orders/order/created.html', {'order': order})
-    else:
-        form = OrderCreateForm()
-        context = {
-                    'items':items,
-                    'form': form
-                   }
-    return render(request, 'orders/order/create.html', context )
 
-        
-@login_required
-def generate_pdf_invoice(request, invoice_id):
+@require_POST
+def cart_add_item(request, product_id):
+    cart = ShopCart.objects.get_or_create_from_request(request)  # create a new cart object passing it the request object 
+    product = get_object_or_404(pro_models.Product, id=product_id) 
+    form = CartAddProductForm(request.POST)
+    
+    if form.is_valid():
+        cdata = form.cleaned_data
+        cart.add(product=product, quantity=cdata['quantity'], update_quantity=True)
+    return redirect('cart:cart_detail')
+
+def cart_remove_item(request, product_id):
+    cart = ShopCart.objects.get_or_create_from_request(request)
+    product = get_object_or_404(pro_models.Product, id=product_id)
+    cart.remove(product)
+    return redirect('cart:cart_detail')
+
+def cart_detail(request):
+    cart = ShopCart.objects.get_or_create_from_request(request)
+    for item in cart:
+        item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'], 'update': True})
+    return render(request, 'cart/detail.html', {'cart': cart})
+
+
     """Generate PDF Invoice"""
 
     queryset = Invoice.objects.filter(user=request.user)

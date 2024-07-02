@@ -35,7 +35,7 @@ Migrations for 'project':
 Migrations for 'shop':
   shop/migrations/0001_initial.py
     - Create model ShopCart
-    - Create model ItemArticle
+    - Create model CartItem
 Migrations for 'taxonomy':
   core/taxonomy/migrations/0001_initial.py
     - Create model Category

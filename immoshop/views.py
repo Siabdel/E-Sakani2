@@ -35,13 +35,13 @@ from shop import models as sh_models
 from customer import models as cu_models 
 from immoshop import models as immo_models
 from invoices import models as devis_models
-from core.cart.cart import Cart
+from shop.models import ShopCart
 from django.urls import reverse, resolve
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from customer.forms import CustomCreatForm, AccountUserCreationForm
 from core.utils import get_product_model, Dict2Obj
-from core.cart.forms import CartAddProductForm
+from core.cart__.forms import CartAddProductForm
 from core.taxonomy import models as tax_models
 from django.shortcuts import get_object_or_404
 
@@ -183,7 +183,7 @@ class InvoiceCreate(View):
     
     def post(self, request, *args, **kwargs):
         # cart 
-        cart = Cart(request) 
+        cart = ShopCart(request) 
         cart_id = request.session[settings.CART_SESSION_ID]
 
         form = self.form_class(request.POST)
@@ -228,7 +228,7 @@ def invoice_create(request):
     2- create invoice + ItemInvoice
     3- Valider la commande ou la reservation
     """
-    cart = Cart(request) 
+    cart = ShopCart(request) 
     cart_id = request.session[settings.CART_SESSION_ID]
     #raise Exception(f" cart={cart}, card_id={cart_id}")
     context = {} 

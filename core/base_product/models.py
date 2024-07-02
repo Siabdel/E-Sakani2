@@ -158,7 +158,7 @@ class BaseProduct(PolymorphicModel, ):
             current one, or ``None`` if no product matches in the cart.
         """
         from shop import models as sh_models 
-        cart_item_qs = sh_models.ItemArticle.objects.filter(cart=cart, product=self)
+        cart_item_qs = sh_models.CartItem.objects.filter(cart=cart, product=self)
         return cart_item_qs.first()
 
     def deduct_from_stock(self, quantity, **kwargs):
